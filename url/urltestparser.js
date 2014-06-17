@@ -1,6 +1,6 @@
 function URLTestParser(input) {
   var relativeSchemes = ["ftp", "file", "gopher", "http", "https", "ws", "wss"],
-      tokenMap = { "\\": "\\", n: "\n", r: "\r", s: " ", t: "\t", f: "\f" }
+      tokenMap = { "\\": "\\", n: "\n", r: "\r", s: " ", t: "\t", f: "\f" },
       resultMap = { s: "scheme", u: "username", pass: "password", h: "host", port: "port", p: "path", q: "query", f: "fragment" },
       results = []
   function Test() {
@@ -48,10 +48,10 @@ function URLTestParser(input) {
     }
     return output
   }
-  var lines = input.split("\n")
+  var lines = input.split(/(?:\r\n|\r|\n)/)
   for(var i = 0, l = lines.length; i < l; i++) {
     var line = lines[i]
-    if(line === "" || line.indexOf("#", 0) === 0) {
+    if(line.trim() === "" || line.indexOf("#", 0) === 0) {
       continue
     }
     var pieces = line.split(" "),
@@ -69,7 +69,7 @@ function URLTestParser(input) {
         continue
       }
       var subpieces = piece.split(":"),
-          token = subpieces.shift()
+          token = subpieces.shift(),
           value = subpieces.join(":")
       result[resultMap[token]] = normalize(value)
     }
