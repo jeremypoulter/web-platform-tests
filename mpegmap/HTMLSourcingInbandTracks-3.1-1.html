@@ -27,8 +27,11 @@
 
 
   <body>
-    <p><a href="http://html5.cablelabs.com">spec reference</a></p>
-    <p><a href="http://html5.cablelabs.com/dlna-rui-test/dlna">test assertion</a></p>
+    <p>
+      <a href="http://www.w3.org/TR/html5/references.html#refsINBANDTRACKS">Spec
+      Reference [INBANDTRACKS]</a>
+    </p>
+
     <video id="v" width="400" height="300" autoplay controls></video>
     <div id="log"></div>
 
@@ -40,24 +43,22 @@
 
       // In test media file the PMT 'ES apperance order'
       // is the same as the assending order of ES PIDs.
-      var pids = ['45', '1768', '1770'];                // SCTE-35, EISS, EISS PIDS
-      var foundIds = ['-1', '-1', '-1'];                // SCTE-35, EISS, EISS
-      var pmtStreamId = 'video/mp2t track-description'; // exclude PMT TextTrack from test
-
-
+      var pids = ['1770', '1768', '45'];                // SCTE-35, EISS, EBIF PIDS
+ 
       vid.addEventListener("playing", function() {
         setTimeout(function() {
 
           vid.pause();
 
           test.step(function() {
-            // Find the 3 'Other TextTracks' in DOM.  Exclude the PMT TextTrack
-            for (i=0; i< vid.textTracks.length; i++) {
-              if (vid.textTracks[i].id != pmtStreamId) {
-                foundIds[i] = vid.textTracks[i].id;
-              }
+	    // Make sure the three required tracks are in order
+	    var next = 0;
+	    for (i = 0; i < vid.textTracks.length; i++) {
+              if (pids.indexOf(vid.textTracks[i].id) >= 0) {
+		assert_equals(pids[next], vid.textTracks[i].id, "TextTrackList Order");
+		next++;
+	      }
             }
-            assert_array_equals(foundIds, pids, "TextTrackList Order");
           }, "TextTrackListOrder.");
 
           test.done();

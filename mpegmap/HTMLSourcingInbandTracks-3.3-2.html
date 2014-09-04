@@ -25,8 +25,11 @@
 
 
   <body>
-    <p><a href="http://html5.cablelabs.com">spec reference</a></p>
-    <p><a href="http://html5.cablelabs.com/dlna-rui-test/dlna">test assertion</a></p>
+    <p>
+      <a href="http://www.w3.org/TR/html5/references.html#refsINBANDTRACKS">Spec
+      Reference [INBANDTRACKS]</a>
+    </p>
+
     <video id="v" width="400" height="300" autoplay controls></video>
     <div id="log"></div>
 
@@ -36,10 +39,10 @@
       var vid = document.getElementById("v");
       vid.src = mediaServerURL() + "UserPrivateStreams.ts";
 
-      var index1 = -1;
-      var index2 = -1;
-      var pid1 = '1768';  // EISS1 PID
-      var pid2 = '1770';  // EISS2 PID
+      var indexEiss = -1;
+      var indexEbif = -1;
+      var eissPid = '1768';  // EISS1 PID
+      var ebifPid = '1770';  // EISS2 PID
       var kind = 'metadata';
       var language = '';
       var mode = 'disabled';
@@ -51,39 +54,39 @@
           vid.pause();
 
           for (i=0; i< vid.textTracks.length; i++) {
-            if (vid.textTracks[i].id == pid1) {
-              index1 = i;
+            if (vid.textTracks[i].id == eissPid) {
+              indexEiss = i;
             }
-            if (vid.textTracks[i].id == pid2) {
-              index2 = i;
+            if (vid.textTracks[i].id == ebifPid) {
+              indexEbif = i;
             }
           }
 
-          if (pid1 == -1) {
+          if (eissPid == -1) {
             test.step(function() {
-              assert_unreached("Did not find first EISS TextTrack.id (PID) " + pid1 + " in DOM.");
-            }, "Did not find first EISS TextTrack.id (PID) " + pid1 + " in DOM.");
+              assert_unreached("Did not find first EISS TextTrack.id (PID) " + eissPid + " in DOM.");
+            }, "Did not find first EISS TextTrack.id (PID) " + eissPid + " in DOM.");
             test.done();
           }
-          else if (pid2 == -1) {
+          else if (ebifPid == -1) {
             test.step(function() {
-              assert_unreached("Did not find second EISS TextTrack.id (PID) " + pid2 + " in DOM.");
-            }, "Did not find second EISS TextTrack.id (PID) " + pid2 + " in DOM.");
+              assert_unreached("Did not find second EISS TextTrack.id (PID) " + ebifPid + " in DOM.");
+            }, "Did not find second EISS TextTrack.id (PID) " + ebifPid + " in DOM.");
             test.done();
 
           } else {
             test.step(function() {
-              // EISS1
-              assert_equals(vid.textTracks[index1].id, pid1, "TextTrackList1.id EISS1");
-              assert_equals(vid.textTracks[index1].kind, kind, "TextTrack1.kind");
-              assert_equals(vid.textTracks[index1].language, language, "TextTrack1.language");
-              assert_equals(vid.textTracks[index1].mode, mode, "TextTrack1.mode");
+              // EISS
+              assert_equals(vid.textTracks[indexEiss].id, eissPid, "TextTrackList1.id EISS1");
+              assert_equals(vid.textTracks[indexEiss].kind, kind, "TextTrack1.kind");
+              assert_equals(vid.textTracks[indexEiss].language, language, "TextTrack1.language");
+              assert_equals(vid.textTracks[indexEiss].mode, mode, "TextTrack1.mode");
 
-              // EISS2
-              assert_equals(vid.textTracks[index2].id, pid2, "TextTrackList2.id EISS2");
-              assert_equals(vid.textTracks[index2].kind, kind, "TextTrack2.kind");
-              assert_equals(vid.textTracks[index2].language, language, "TextTrack2.language");
-              assert_equals(vid.textTracks[index2].mode, mode, "TextTrack2.mode");
+              // EBIF
+              assert_equals(vid.textTracks[indexEbif].id, ebifPid, "TextTrackList2.id EISS2");
+              assert_equals(vid.textTracks[indexEbif].kind, kind, "TextTrack2.kind");
+              assert_equals(vid.textTracks[indexEbif].language, language, "TextTrack2.language");
+              assert_equals(vid.textTracks[indexEbif].mode, mode, "TextTrack2.mode");
             });
 
             test.done();

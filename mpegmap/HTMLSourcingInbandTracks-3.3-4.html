@@ -25,8 +25,11 @@
 
 
   <body>
-    <p><a href="http://html5.cablelabs.com">spec reference</a></p>
-    <p><a href="http://html5.cablelabs.com/dlna-rui-test/dlna">test assertion</a></p>
+    <p>
+      <a href="http://www.w3.org/TR/html5/references.html#refsINBANDTRACKS">Spec
+      Reference [INBANDTRACKS]</a>
+    </p>
+
     <video id="v" width="400" height="300" autoplay controls></video>
     <div id="log"></div>
 
@@ -36,7 +39,8 @@
       var vid = document.getElementById("v");
       vid.src = mediaServerURL() + "ClosedCaption.ts";
 
-      var pid   = '33';  // video stream PID 
+      var serviceNumber = '1';  // service number in service block
+      var captionServiceNumber = '1';  // caption service number in Caption Service Descriptor
       var index = -1;
       // Currently, the specification under test indicates 'kind' == 'caption.' 
       // By W3C specification, 'kind' should be plural, 'captions.'
@@ -58,7 +62,7 @@
           vid.pause();
 
           for (i=0; i< vid.textTracks.length; i++) {
-            if (vid.textTracks[i].id == pid) {
+            if (vid.textTracks[i].kind == kind) {
               vid.textTracks[i].mode = 'hidden';
               index = i;
               break;
@@ -67,18 +71,24 @@
 
           if (index == -1) {
             test.step(function() {
-              assert_unreached("Did not find Closed Caption TextTrack.id (PID) " + pid + " in DOM.");
-            }, "Did not find Closed Caption TextTrack.id (PID) " + pid + " in DOM.");
+              assert_unreached("Did not find Closed Caption Track (kind) "
+                               + kind + " in DOM.");
+            }, "Did not find Closed Caption Track (kind) "
+		      + kind + " in DOM.");
           }
 
           test.step(function() {
+            assert_equals(vid.textTracks[index].id, captionServiceNumber, "TextTrack.id");
             assert_equals(vid.textTracks[index].kind, kind, "TextTrack.kind");
             assert_equals(vid.textTracks[index].language, language, "TextTrack.language");
+	    for (i=0; i < vid.textTracks[index].cues.length; i++) {
+	      assert_equals(vid.textTracks[index].cues[i].id, serviceNumber, "Cue.id");
+	    }
           });
 
           test.done();
 
-        }, 12000);
+        }, 24000);
       }, false);
 
     </script>

@@ -25,8 +25,11 @@
 
 
   <body>
-    <p><a href="http://html5.cablelabs.com">spec reference</a></p>
-    <p><a href="http://html5.cablelabs.com/dlna-rui-test/dlna">test assertion</a></p>
+    <p>
+      <a href="http://www.w3.org/TR/html5/references.html#refsINBANDTRACKS">Spec
+      Reference [INBANDTRACKS]</a>
+    </p>
+
     <video id="v" width="400" height="300" autoplay controls></video>
     <div id="log"></div>
 
@@ -43,7 +46,7 @@
       var failed = false;
       var firstPassCues = null;
       var secondPassCues = null;
-
+      var kind = "captions";
 
       vid.addEventListener("playing", function() {
         if (hasNotPlayed) {
@@ -51,19 +54,24 @@
           hasNotPlayed = false;
 
           setTimeout(function() {
+
             for (i=0; i< vid.textTracks.length; i++) {
-              if (vid.textTracks[i].id == pid) {
-                index = i;
-                break;
+              if (vid.textTracks[i].kind == kind) {
+		vid.textTracks[i].mode = 'hidden';
+		index = i;
+		break;
               }
             }
 
             if (index == -1) {
               hasNotPaused = false;
               vid.pause();
+
               test.step(function() {
-                assert_unreached("Did not find Closed Caption TextTrack.id (PID) " + pid + " in DOM.");
-              }, "Did not find Closed Caption TextTrack.id (PID) " + pid + " in DOM");
+		assert_unreached("Did not find Closed Caption Track (kind) "
+				 + kind + " in DOM.");
+              }, "Did not find Closed Caption Track (kind) "
+			+ kind + " in DOM.");
               failed = true;
               test.done();
             }
