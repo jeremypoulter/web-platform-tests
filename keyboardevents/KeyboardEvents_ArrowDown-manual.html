@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+  <head>
+    <title>KeyboardEvents ArrowDown</title>
+    <link rel="author" title="CableLabs" href="html5@cablelabs.com">
+    <meta name="flags" content="[requirement flags]">
+    <meta name="assert" content="KeyboardEvents - UA Supports ArrowDown events">
+    <meta name="timeout" content="long">
+
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+
+    <!-- Script Version: BETA -->
+    <script src="keyboardevents.js"></script>
+  </head>
+
+
+  <body>
+    <h2>Test:</h2>
+    <p>
+       <a href="https://dvcs.w3.org/hg/dom3events/raw-file/tip/html/DOM3Events-key.html"
+        >Navigation Keys - ArrowDown</a>
+    </p>
+
+    <h2>Instructions</h2>
+    <p id="instructions">
+      <b>Do not press any keys,</b> the test is initializing...
+    </p>
+
+    <h2>Test Log</h2>
+    <p id="testlog">
+      <b>Test initializing...</b>
+    </p>
+
+    <script>
+
+      // Run the test for the named key
+      testKeyKeydownKeyup("ArrowDown"); // Per the spec
+      //testKeyKeydownKeyup("Down"); // For testing in chromium
+
+    </script>
+  </body>
+</html>
