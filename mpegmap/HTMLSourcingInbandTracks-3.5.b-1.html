@@ -116,19 +116,12 @@
             });
 
             test.step(function() {
-              var duplicateCue = 0;
-              for (i=0; i < firstPassCues.length; i++) {
-                for (j=0; j < secondPassCues.length; j++) {
-                  if (firstPassCues[i].text == secondPassCues[j].text) {
-                    duplicateCue++;
-                  }
-                  if (duplicateCue > 1) {
-                    assert_less_than_equal(duplicateCue, 1, 'Cue[' + i + ']' + ' was duplicated.')
-                  } else {
-                    duplicateCue = 0;
-                  }
+              for (i = 0; i < secondPassCues.length; i++) {
+                for (j = i+1; j < secondPassCues.length; j++) {
+                  assert_not_equals(secondPassCues[i].text, secondPassCues[j].text,
+				    'Cue[' + i + ']' + ' was duplicated.');
                 }
-              }
+	      }
             });
           }, 15000);
 

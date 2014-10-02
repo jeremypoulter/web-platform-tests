@@ -41,14 +41,6 @@
       var vid = document.getElementById("v");
       vid.src = mediaServerURL() + "ClosedCaption.ts";
 
-      var pid   = '33';  // video stream PID 
-      var index = -1;
-      // Currently, the specification under test indicates 'kind' == 'caption.' 
-      // By W3C specification, 'kind' should be plural, 'captions.'
-      var kind = 'captions';
-      var language = 'en';
-
-
       vid.addEventListener("playing", function() {
         setTimeout(function() {
 
