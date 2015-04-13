@@ -10,20 +10,17 @@
     <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-
     <!-- Script Version: BETA -->
-
     <!-- About the Media Resource
-           To verify DOM elements the details of the test media must be known prior to test execution.
-           This test script is bound to the test media file sourced in the script.
-           Sourcing a differnt test media file, or modifying that file, may invalidate the test.
 
-           The media is an MPEG-2, Single Program Transport Stream
-           containing both 608 and 708 Closed Caption.
+         To verify DOM elements the details of the test media must be known prior to test execution.
+         This test script is bound to the test media file sourced in the script.
+         Sourcing a differnt test media file, or modifying that file, may invalidate the test.
+
+         The media is an MPEG-2, Single Program Transport Stream
+         containing both 608 and 708 Closed Caption.
     -->
   </head>
-
-
   <body>
     <p>
       <a href="http://www.w3.org/TR/html5/references.html#refsINBANDTRACKS">Spec
@@ -32,7 +29,6 @@
 
     <video id="v" width="400" height="300" autoplay controls></video>
     <div id="log"></div>
-
 
     <script>
       var test = async_test("Closed Caption TextTrack attributes.");
@@ -47,21 +43,17 @@
       var kind = 'captions';
       var language = 'en';
 
-
       vid.addEventListener("playing", function() {
         setTimeout(function() {
-
-          for (i=0; i< vid.textTracks.length; i++) {
-	    vid.textTracks[i].mode = 'hidden';
+          for (var i = 0; i < vid.textTracks.length; i++) {
+            vid.textTracks[i].mode = 'hidden';
           }
-
         }, 100);
 
-    setTimeout(function() {
-
+        setTimeout(function() {
           vid.pause();
 
-          for (i=0; i< vid.textTracks.length; i++) {
+          for (var i = 0; i< vid.textTracks.length; i++) {
             if (vid.textTracks[i].kind == kind) {
               vid.textTracks[i].mode = 'hidden';
               index = i;
@@ -71,26 +63,24 @@
 
           if (index == -1) {
             test.step(function() {
-              assert_unreached("Did not find Closed Caption Track (kind) "
-                               + kind + " in DOM.");
-            }, "Did not find Closed Caption Track (kind) "
-		      + kind + " in DOM.");
+              assert_unreached("Did not find Closed Caption Track (kind) " +
+                               kind + " in DOM.");
+            }, "Did not find Closed Caption Track (kind) " + kind + " in DOM.");
           }
 
           test.step(function() {
             assert_equals(vid.textTracks[index].id, captionServiceNumber, "TextTrack.id");
             assert_equals(vid.textTracks[index].kind, kind, "TextTrack.kind");
             assert_equals(vid.textTracks[index].language, language, "TextTrack.language");
-	    for (i=0; i < vid.textTracks[index].cues.length; i++) {
-	      assert_equals(vid.textTracks[index].cues[i].id, serviceNumber, "Cue.id");
-	    }
+            for (var i = 0; i < vid.textTracks[index].cues.length; i++) {
+              assert_equals(vid.textTracks[index].cues[i].id, serviceNumber, "Cue.id");
+            }
           });
 
           test.done();
 
         }, 24000);
       }, false);
-
     </script>
   </body>
 </html>

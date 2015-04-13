@@ -10,30 +10,24 @@
     <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-
     <!-- Script Version: BETA -->
-
     <!-- About the Media Resource
-           To verify DOM elements the details of the test media must be known prior to test execution.
-           This test script is bound to the test media file sourced in the script.
-           Sourcing a differnt test media file, or modifying that file, may invalidate the test.
 
-           The media is an MPEG-2, Single Program Transport Stream
-           containing one video elementary stream, ES PID 33.
+         To verify DOM elements the details of the test media must be known prior to test execution.
+         This test script is bound to the test media file sourced in the script.
+         Sourcing a differnt test media file, or modifying that file, may invalidate the test.
+
+         The media is an MPEG-2, Single Program Transport Stream
+         containing one video elementary stream, ES PID 33.
     -->
   </head>
-
-
   <body>
     <p>
       <a href="http://www.w3.org/TR/html5/references.html#refsINBANDTRACKS">Spec
       Reference [INBANDTRACKS]</a>
     </p>
-
     <video id="v" width="400" height="300" autoplay controls></video>
     <div id="log"></div>
-
-
     <script>
       var test = async_test("VideoTrack attributes.");
       var vid = document.getElementById("v");
@@ -43,9 +37,7 @@
       var pid = '33'; // video ES PID
       var kind = 'main';
 
-
       vid.addEventListener("playing", function() {
-
         vid.pause();
 
         setTimeout(function() {
@@ -71,7 +63,6 @@
           }
         }, 12000);
       }, false);
-
     </script>
   </body>
 </html>

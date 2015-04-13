@@ -10,20 +10,17 @@
     <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-
     <!-- Script Version: BETA -->
-
     <!-- About the Media Resource
-           To verify DOM elements the details of the test media must be known prior to test execution.
-           This test script is bound to the test media file sourced in the script.
-           Sourcing a differnt test media file, or modifying that file, may invalidate the test.
 
-           The media is an MPEG-2, Single Program Transport Stream
-           containing two audio elementary streams, ES PIDs 36, 41.
+         To verify DOM elements the details of the test media must be known prior to test execution.
+         This test script is bound to the test media file sourced in the script.
+         Sourcing a differnt test media file, or modifying that file, may invalidate the test.
+
+         The media is an MPEG-2, Single Program Transport Stream
+         containing two audio elementary streams, ES PIDs 36, 41.
     -->
   </head>
-
-
   <body>
     <p>
       <a href="http://www.w3.org/TR/html5/references.html#refsINBANDTRACKS">Spec
@@ -32,7 +29,6 @@
 
     <audio id="a" width="400" height="300" autoplay controls></audio>
     <div id="log"></div>
-
 
     <script>
       var test = async_test("AudioTracks attributes.");
@@ -46,10 +42,8 @@
       var kind1 = 'main';
       var kind2 = '';
 
-
       aud.addEventListener("playing", function() {
         setTimeout(function() {
-
           aud.pause();
 
           for (i=0; i< aud.audioTracks.length; i++) {
@@ -85,7 +79,6 @@
           }
         }, 12000);
       }, false);
-
     </script>
   </body>
 </html>

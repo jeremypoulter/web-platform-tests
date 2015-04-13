@@ -10,16 +10,13 @@
  * URI to source the test media file for that test.
  * Edit the return value of mediaServerURL() to return the URL of your media test server.
  *
- *    e.g.  video.src = mediaServerURL() + "UserPrivateStreams.ts";
- *
+ * e.g. video.src = mediaServerURL() + "UserPrivateStreams.ts";
  */
-
 
 /*
- * Return URL of media server. 
+ * Return URL of media server.
  */
-  function mediaServerURL()
-  {
-    //return "http://localhost:80/media/";
-    return "http://web-platform.test:80/media/";
-  }
+function mediaServerURL()
+{
+  return "http://web-platform.test:80/media/";
+}
