@@ -18,5 +18,5 @@
  */
 function mediaServerURL()
 {
-  return "http://web-platform.test:80/media/";
+  return "/media/";
 }
