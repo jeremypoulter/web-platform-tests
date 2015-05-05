@@ -35,49 +35,30 @@
       var aud = document.getElementById("a");
       aud.src = mediaServerURL() + "ClosedCaption.ts"; 
 
-      var index1 = -1;
-      var index2 = -1;
-      var pid1 = '36'; // audio1 ES PID
-      var pid2 = '41'; // audio2 ES PID
-      var kind1 = 'main';
-      var kind2 = '';
+      var expectedTracks = [
+        {
+          id: "36",
+          kind: "main"
+        }, {
+          id: "41",
+          kind: ""
+        }
+      ];
 
       aud.addEventListener("playing", function() {
-        setTimeout(function() {
-          aud.pause();
+        aud.pause();
 
-          for (i=0; i< aud.audioTracks.length; i++) {
-            if (aud.audioTracks[i].id == pid1) {
-              index1 = i;
-            }
-            if (aud.audioTracks[i].id == pid2) {
-              index2 = i;
-            }
+        test.step(function() {
+          assert_equals(aud.audioTracks.length, expectedTracks.length, "AudioTrackList.length");
+          for (var i = 0; i < expectedTracks.length; ++i) {
+            var expected = expectedTracks[i];
+            // These should be in PMT order
+            var actual = aud.audioTracks[i];
+            assert_equals(actual.id, expected.id, "AudioTrackList[" + i + "].id");
+            assert_equals(actual.kind, expected.kind, "AudioTrack[" + i + "].kind");
           }
-
-          if (index1 == -1) {
-            test.step(function() {
-              assert_unreached("Did not find first AudioTrack PID " + pid1 + " in DOM");
-            }, "Did not find first AudioTrack PID " + pid1 + " in DOM");
-            test.done();
-
-          } else if (index2 == -1) {
-            test.step(function() {
-              assert_unreached("Did not find second AudioTrack PID " + pid2 + " in DOM");
-            }, "Did not find second AudioTrack PID " + pid2 + " in DOM");
-            test.done();
-
-          } else {
-            test.step(function() {
-              assert_equals(aud.audioTracks.length,       2,     "AudioTracks.length");
-              assert_equals(aud.audioTracks[index1].id,   pid1,  "AudioTrack1.id");
-              assert_equals(aud.audioTracks[index1].kind, kind1, "AudioTrack1.kind");
-              assert_equals(aud.audioTracks[index2].id,   pid2,  "AudioTrack2.id");
-              assert_equals(aud.audioTracks[index2].kind, kind2, "AudioTrack2.kind");
-            });
-            test.done();
-          }
-        }, 12000);
+        });
+        test.done();
       }, false);
     </script>
   </body>
