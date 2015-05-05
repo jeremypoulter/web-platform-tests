@@ -33,40 +33,29 @@
       var vid = document.getElementById("v");
       vid.src = mediaServerURL() + "UserPrivateStreams.ts"; 
 
-      var index = -1;
-      var pid = '45';  // Program Insertion Cue Message PID
-      var kind = 'metadata';
-      var language = '';
-      var mode = 'disabled';
+      var pid = '45'; // Program Insertion Cue Message PID
+
+      vid.textTracks.addEventListener("addtrack", function(event) {
+        var track = event.track;
+        if (track.id === pid) {
+          test.step(function() {
+            assert_equals(track.kind, "metadata", "TextTrack.kind");
+            assert_equals(track.language, "", "TextTrack.language");
+            assert_equals(track.mode, "disabled", "TextTrack.mode");
+          });
+          test.done();
+        }
+      });
 
       vid.addEventListener("playing", function() {
-
         vid.pause();
-
-        setTimeout(function() {
-          for (i=0; i< vid.textTracks.length; i++) {
-            if (vid.textTracks[i].id == pid) {
-              index++;
-              break;
-            }
-          }
-
-          if (index == -1) {
-            test.step(function() {
-              assert_unreached("Did not find  Program Insertion Cue TextTrack.id (PID) " + pid + " in DOM.");
-            }, "Did not find Program Insertion Cue TextTrack.id (PID) " + pid + " in DOM.");
-            test.done();
-
-          } else {
-            test.step(function() {
-              assert_equals(vid.textTracks[index].kind,     kind,     "TextTrack.kind");
-              assert_equals(vid.textTracks[index].language, language, "TextTrack.language");
-              assert_equals(vid.textTracks[index].mode,     mode,     "TextTrack.mode");
-            });
-            test.done();
-          }
-        }, 12000);
-      }, false);
+        if (!vid.textTracks.getTrackById(pid)) {
+          test.step(function() {
+            assert_unreached("Did not find  Program Insertion Cue TextTrack.id (PID) " + pid + " in DOM.");
+          }, "Did not find Program Insertion Cue TextTrack.id (PID) " + pid + " in DOM.");
+          test.done();
+        }
+      });
     </script>
   </body>
 </html>
