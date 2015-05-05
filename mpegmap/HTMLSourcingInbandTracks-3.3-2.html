@@ -29,63 +29,57 @@
     <video id="v" width="400" height="300" autoplay controls></video>
     <div id="log"></div>
     <script>
-      var test = async_test("EISS TextTrack attributes.");
+      var test = async_test("EISS/EBIF TextTrack attributes.");
       var vid = document.getElementById("v");
       vid.src = mediaServerURL() + "UserPrivateStreams.ts";
 
-      var indexEiss = -1;
-      var indexEbif = -1;
-      var eissPid = '1768';  // EISS1 PID
-      var ebifPid = '1770';  // EISS2 PID
+      var eissPid = '1768';
+      var ebifPid = '1770';
       var kind = 'metadata';
       var language = '';
       var mode = 'disabled';
 
-      vid.addEventListener("playing", function() {
-        setTimeout(function() {
+      var sawTracks = 0;
+      vid.textTracks.addEventListener("addtrack", function(event) {
+        var track = event.track;
 
+        if (track.id === eissPid) {
+          test.step(function() {
+            assert_equals(track.id, eissPid, "TextTrackList1.id EISS1");
+            assert_equals(track.kind, kind, "TextTrack1.kind");
+            assert_equals(track.language, language, "TextTrack1.language");
+            assert_equals(track.mode, mode, "TextTrack1.mode");
+          }, "EISS TextTrack attributes");
+        } else if (track.id === ebifPid) {
+          test.step(function() {
+            assert_equals(track.id, ebifPid, "TextTrackList2.id EISS2");
+            assert_equals(track.kind, kind, "TextTrack2.kind");
+            assert_equals(track.language, language, "TextTrack2.language");
+            assert_equals(track.mode, mode, "TextTrack2.mode");
+          }, "EBIF TextTrack attributes");
+        } else {
+          return;
+        }
+        ++sawTracks;
+        if (sawTracks >= 2) {
+          test.done();
           vid.pause();
+        }
+      });
 
-          for (i=0; i< vid.textTracks.length; i++) {
-            if (vid.textTracks[i].id == eissPid) {
-              indexEiss = i;
-            }
-            if (vid.textTracks[i].id == ebifPid) {
-              indexEbif = i;
-            }
-          }
-
-          if (eissPid == -1) {
-            test.step(function() {
-              assert_unreached("Did not find first EISS TextTrack.id (PID) " + eissPid + " in DOM.");
-            }, "Did not find first EISS TextTrack.id (PID) " + eissPid + " in DOM.");
-            test.done();
-          }
-          else if (ebifPid == -1) {
-            test.step(function() {
-              assert_unreached("Did not find second EISS TextTrack.id (PID) " + ebifPid + " in DOM.");
-            }, "Did not find second EISS TextTrack.id (PID) " + ebifPid + " in DOM.");
-            test.done();
-
-          } else {
-            test.step(function() {
-              // EISS
-              assert_equals(vid.textTracks[indexEiss].id, eissPid, "TextTrackList1.id EISS1");
-              assert_equals(vid.textTracks[indexEiss].kind, kind, "TextTrack1.kind");
-              assert_equals(vid.textTracks[indexEiss].language, language, "TextTrack1.language");
-              assert_equals(vid.textTracks[indexEiss].mode, mode, "TextTrack1.mode");
-
-              // EBIF
-              assert_equals(vid.textTracks[indexEbif].id, ebifPid, "TextTrackList2.id EISS2");
-              assert_equals(vid.textTracks[indexEbif].kind, kind, "TextTrack2.kind");
-              assert_equals(vid.textTracks[indexEbif].language, language, "TextTrack2.language");
-              assert_equals(vid.textTracks[indexEbif].mode, mode, "TextTrack2.mode");
-            });
-
-            test.done();
-          }
-        }, 12000);
-      }, false);
+      vid.addEventListener("canplaythrough", function() {
+        if (!vid.textTracks.getTrackById(eissPid)) {
+          test.step(function() {
+            assert_unreached("Did not find first EISS TextTrack.id (PID) " + eissPid + " in DOM.");
+          }, "Did not find first EISS TextTrack.id (PID) " + eissPid + " in DOM.");
+          test.done();
+        } else if (!vid.textTracks.getTrackById(ebifPid)) {
+          test.step(function() {
+            assert_unreached("Did not find second EISS TextTrack.id (PID) " + ebifPid + " in DOM.");
+          }, "Did not find second EISS TextTrack.id (PID) " + ebifPid + " in DOM.");
+          test.done();
+        }
+      });
     </script>
   </body>
 </html>
