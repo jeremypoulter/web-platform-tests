@@ -36,51 +36,33 @@
       vid.src = mediaServerURL() + "ClosedCaption.ts";
 
       var serviceNumber = '1';  // service number in service block
-      var captionServiceNumber = '1';  // caption service number in Caption Service Descriptor
-      var index = -1;
+      var id = '1';  // caption service number in Caption Service Descriptor
       // Currently, the specification under test indicates 'kind' == 'caption.' 
       // By W3C specification, 'kind' should be plural, 'captions.'
       var kind = 'captions';
       var language = 'en';
 
-      vid.addEventListener("playing", function() {
-        setTimeout(function() {
-          for (var i = 0; i < vid.textTracks.length; i++) {
-            vid.textTracks[i].mode = 'hidden';
-          }
-        }, 100);
-
-        setTimeout(function() {
-          vid.pause();
-
-          for (var i = 0; i< vid.textTracks.length; i++) {
-            if (vid.textTracks[i].kind == kind) {
-              vid.textTracks[i].mode = 'hidden';
-              index = i;
-              break;
-            }
-          }
-
-          if (index == -1) {
-            test.step(function() {
-              assert_unreached("Did not find Closed Caption Track (kind) " +
-                               kind + " in DOM.");
-            }, "Did not find Closed Caption Track (kind) " + kind + " in DOM.");
-          }
-
+      vid.textTracks.addEventListener("addtrack", function(event) {
+        var track = event.track;
+        track.mode = "hidden";
+        if (track.id === id) {
           test.step(function() {
-            assert_equals(vid.textTracks[index].id, captionServiceNumber, "TextTrack.id");
-            assert_equals(vid.textTracks[index].kind, kind, "TextTrack.kind");
-            assert_equals(vid.textTracks[index].language, language, "TextTrack.language");
-            for (var i = 0; i < vid.textTracks[index].cues.length; i++) {
-              assert_equals(vid.textTracks[index].cues[i].id, serviceNumber, "Cue.id");
-            }
+            assert_equals(track.kind, kind, "TextTrack.kind");
+            assert_equals(track.language, language, "TextTrack.language");
           });
-
           test.done();
-
-        }, 24000);
-      }, false);
+        }
+      });
+      vid.addEventListener("playing", function() {
+        vid.pause();
+        if (!vid.textTracks.getTrackById(id)) {
+          test.step(function() {
+            assert_unreached("Did not find Closed Caption Track with id " +
+                             id + " in DOM.");
+          });
+          test.done();
+        }
+      });
     </script>
   </body>
 </html>
