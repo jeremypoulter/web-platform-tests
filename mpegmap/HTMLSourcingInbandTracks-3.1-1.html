@@ -38,26 +38,23 @@
 
       // In test media file the PMT 'ES apperance order'
       // is the same as the assending order of ES PIDs.
-      var pids = ['1770', '1768', '45'];                // SCTE-35, EISS, EBIF PIDS
+      var pids = ['1770', '1768', '45']; // SCTE-35, EISS, EBIF PIDS
  
       vid.addEventListener("playing", function() {
-        setTimeout(function() {
+        vid.pause();
 
-          vid.pause();
-
-          test.step(function() {
-            // Make sure the three required tracks are in order
-            var next = 0;
-            for (i = 0; i < vid.textTracks.length; i++) {
-              if (pids.indexOf(vid.textTracks[i].id) >= 0) {
-                assert_equals(pids[next], vid.textTracks[i].id, "TextTrackList Order");
-                next++;
-              }
+        test.step(function() {
+          // Make sure the three required tracks are in order
+          var next = 0;
+          for (var i = 0; i < vid.textTracks.length; i++) {
+            if (pids.indexOf(vid.textTracks[i].id) >= 0) {
+              assert_equals(pids[next], vid.textTracks[i].id, "TextTrackList Order");
+              next++;
             }
-          }, "TextTrackListOrder.");
+          }
+        }, "TextTrackListOrder.");
 
-          test.done();
-        }, 15000);
+        test.done();
       }, false);
     </script>
   </body>
