@@ -34,67 +34,45 @@
       var vid = document.getElementById("v");
       vid.src = mediaServerURL() + "ClosedCaption.ts"; 
 
-      var index = -1;
       var pid = "33"; // video stream (Closed Caption) PID
-      var hasNotPlayed = true;
-      var hasNotPaused = true;
-      var failed = false;
       var firstPassCues = null;
       var secondPassCues = null;
       var kind = "captions";
+      var track = null;
 
-      vid.addEventListener("playing", function() {
-        if (hasNotPlayed) {
-          hasNotPlayed = false;
-
-          setTimeout(function() {
-            for (var i = 0; i < vid.textTracks.length; i++) {
-              if (vid.textTracks[i].kind == kind) {
-                vid.textTracks[i].mode = 'hidden';
-                index = i;
-                break;
-              }
-            }
-
-            if (index === -1) {
-              hasNotPaused = false;
-              vid.pause();
-
-              test.step(function() {
-                assert_unreached("Did not find Closed Caption Track (kind) " +
-                                 kind + " in DOM.");
-              }, "Did not find Closed Caption Track (kind) " + kind + " in DOM.");
-              failed = true;
-              test.done();
-            }
-          }, 15000);
-
-          setTimeout(function() {
-            if (!failed) {
-              vid.textTracks[index].mode = 'hidden';
+      vid.textTracks.addEventListener("addtrack", function(event) {
+        if (event.track.kind === kind) {
+          track = event.track;
+          track.mode = "hidden";
+          track.addEventListener("cuechange", function() {
+            if (!firstPassCues) {
               firstPassCues = [];
-              for (var i = 0; i < vid.textTracks[index].cues.length; i++) {
-                firstPassCues[i] = vid.textTracks[index].cues[i];
+              for (var i = 0; i < track.cues.length; i++) {
+                firstPassCues[i] = track.cues[i];
               }
-              vid.pause();
               vid.currentTime = 0;
             }
-          }, 18000);
+          });
         }
-      }, false);
+      });
 
-      vid.addEventListener("pause", function() {
-        if (hasNotPaused) {
-          hasNotPaused = false;
+      setTimeout(function() {
+        if (!track) {
+          vid.pause();
+          test.step(function() {
+            assert_unreached("Did not find Closed Caption Track (kind) " +
+                             kind + " in DOM.");
+          }, "Did not find Closed Caption Track (kind) " + kind + " in DOM.");
+          test.done();
+        }
+      }, 2000);
 
-          setTimeout(function() {
-            vid.play();
-          }, 3000);
-
-          setTimeout(function() {
+      vid.addEventListener("seeked", function() {
+        track.addEventListener("cuechange", function() {
+          if (!secondPassCues) {
             secondPassCues = [];
-            for (var i = 0; i < vid.textTracks[index].cues.length; i++) {
-              secondPassCues[i] = vid.textTracks[index].cues[i];
+            for (var i = 0; i < track.cues.length; i++) {
+              secondPassCues[i] = track.cues[i];
             }
 
             test.step(function() {
@@ -102,24 +80,16 @@
                                 "First play, Closed Caption, TextTrackCues.length was 0.");
               assert_not_equals(secondPassCues.length, 0,
                                 "Second play, Closed Caption, TextTrackCues.length was 0.");
-            });
-
-            test.step(function() {
-              for (var i = 0; i < secondPassCues.length; i++) {
-                for (var j = i + 1; j < secondPassCues.length; j++) {
-                  assert_not_equals(secondPassCues[i].text, secondPassCues[j].text,
-                                    'Cue[' + i + ']' + ' was duplicated.');
-                }
+              for (var i = 0; i < firstPassCues.length && i < secondPassCues.length; i++) {
+                  assert_equals(secondPassCues[i].text, firstPassCues[i].text,
+                                    'Cue[' + i + ']' + ' was different the second time.');
               }
             });
-          }, 15000);
-
-          setTimeout(function() {
-            vid.pause();
             test.done();
-          }, 18000);
-        }
-      }, false);
+            vid.pause();
+          }
+        });
+      });
     </script>
   </body>
 </html>
