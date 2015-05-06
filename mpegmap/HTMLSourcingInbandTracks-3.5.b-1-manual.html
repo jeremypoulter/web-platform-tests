@@ -36,13 +36,11 @@
       var vid = document.getElementById("v");
       vid.src = mediaServerURL() + "ClosedCaption.ts";
 
-      vid.addEventListener("playing", function() {
-        setTimeout(function() {
-          for (var i = 0; i < vid.textTracks.length; i++) {
-            vid.textTracks[i].mode = 'showing';
-          }
-        }, 100);
-      }, false);
+      vid.textTracks.addEventListener("addtrack", function(event) {
+        if (event.track.kind == "captions") {
+          event.track.mode = "showing";
+        }
+      });
     </script>
   </body>
 </html>
