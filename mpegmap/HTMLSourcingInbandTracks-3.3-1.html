@@ -37,11 +37,11 @@
       var eissPid = 1768;
       var ebifPid = 1770;
 
-      var doneCount = 0;
-      function done() {
+      var doneTypes = {};
+      function done(type) {
+        done[type] = true;
         vid.pause();
-        ++doneCount;
-        if (doneCount >= 2) {
+        if (Object.keys(doneCount).length >= 2) {
           test.done();
         }
       }
@@ -72,9 +72,7 @@
             var cue = track.cues[0];
 
             assert_equals(cue.id, "", "DataCue.id");
-            assert_approx_equals(cue.startTime, 0, 0.1, "DataCue.startTime");
-
-            assert_greater_than_equal(cue.endTime + 0.01, cue.startTime, "DataCue.endTime");
+            assert_equals(cue.startTime, 0, "DataCue.startTime");
             assert_true(cue.data instanceof ArrayBuffer, "DataCue.data is ArrayBuffer");
 
             if (i === 0) {
@@ -84,7 +82,7 @@
 
             assert_equals(cue.pauseOnExit, false, "DataCue.pauseOnExit");
           }, type + " DataCues attributes.");
-          done();
+          done(type);
         });
       });
 
