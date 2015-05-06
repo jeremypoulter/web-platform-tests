@@ -37,7 +37,7 @@
       vid.src = mediaServerURL() + "UserPrivateStreams.ts";
 
       // PMT ES appearance order
-      var pids = ["sn-1", "1768", "1770"];
+      var pids = ["sn1", "1768", "1770"];
  
       vid.addEventListener("playing", function() {
         vid.pause();
@@ -47,7 +47,7 @@
           var next = 0;
           for (var i = 0; i < vid.textTracks.length; i++) {
             if (pids.indexOf(vid.textTracks[i].id) !== -1) {
-              assert_equals(pids[next], vid.textTracks[i].id, "TextTrackList Order");
+              assert_equals(vid.textTracks[i].id, pids[next], "TextTrackList Order");
               next++;
             }
           }

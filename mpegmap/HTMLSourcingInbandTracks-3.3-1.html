@@ -41,7 +41,7 @@
       function done(type) {
         done[type] = true;
         vid.pause();
-        if (Object.keys(doneCount).length >= 2) {
+        if (Object.keys(doneTypes).length >= 2) {
           test.done();
         }
       }
@@ -98,7 +98,7 @@
           }, "Did not find EISS TextTrack.id (" + ebifPid + ") in DOM.");
           test.done();
         }
-      }, false);
+      });
     </script>
   </body>
 </html>
