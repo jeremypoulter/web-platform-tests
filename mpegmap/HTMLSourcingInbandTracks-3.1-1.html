@@ -36,19 +36,18 @@
       var vid = document.getElementById("v");
       vid.src = mediaServerURL() + "UserPrivateStreams.ts";
 
-      // In test media file the PMT 'ES apperance order'
-      // is the same as the assending order of ES PIDs.
-      var pids = ['1770', '1768', '45']; // SCTE-35, EISS, EBIF PIDS
+      // PMT ES appearance order
+      var pids = ["sn1", "1768", "1770"];
  
       vid.addEventListener("playing", function() {
         vid.pause();
 
         test.step(function() {
-          // Make sure the three required tracks are in order
+          // Make sure the tracks are in order
           var next = 0;
           for (var i = 0; i < vid.textTracks.length; i++) {
-            if (pids.indexOf(vid.textTracks[i].id) >= 0) {
-              assert_equals(pids[next], vid.textTracks[i].id, "TextTrackList Order");
+            if (pids.indexOf(vid.textTracks[i].id) !== -1) {
+              assert_equals(vid.textTracks[i].id, pids[next], "TextTrackList Order");
               next++;
             }
           }
