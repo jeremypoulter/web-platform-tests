@@ -135,6 +135,7 @@ VisualOutput.prototype = {
         this.meter.style.width = '0px';
         this.meter.textContent = '0%';
         this.elem.querySelector(".jsonResults").style.display = "none";
+        this.elem.querySelector(".uploadJsonResults").style.display = "none";
         this.results_table.removeChild(this.results_table.tBodies[0]);
         this.results_table.appendChild(document.createElement("tbody"));
     },
@@ -230,13 +231,14 @@ VisualOutput.prototype = {
         a.download = "runner-results.json";
         a.textContent = "Download JSON results";
         if (!a.getAttribute("download")) a.textContent += " (right-click and save as to download)";
-        a.style.display = "inline";
+        a.style.display = "inherit";
 
 	// Upload the results (for devices w/o local storage)
 	var file = randName();
 	var d = this.elem.querySelector(".uploadLocation");
 	var u = this.elem.querySelector(".uploadJsonResults");
 	u.href = "";
+	u.style.display = "inherit";
 	u.onclick = function () {
 	    var up = "http://web-platform.test/upload/"
 	    ajax(up+"upload.php",
@@ -278,12 +280,13 @@ VisualOutput.prototype = {
 function ManualUI(elem, runner) {
     this.elem = elem;
     this.runner = runner;
-    this.pass_button = this.elem.querySelector("button.pass");
-    this.fail_button = this.elem.querySelector("button.fail");
+    this.pass_button = this.elem.querySelector(".pass");
+    this.fail_button = this.elem.querySelector(".fail");
+    this.ref_type = this.elem.querySelector(".refType");
+
     this.ref_buttons = this.elem.querySelector(".reftestUI");
-    this.ref_type = this.ref_buttons.querySelector(".refType");
-    this.test_button = this.ref_buttons.querySelector("button.test");
-    this.ref_button = this.ref_buttons.querySelector("button.ref");
+    this.test_button = this.ref_buttons.querySelector(".test");
+    this.ref_button = this.ref_buttons.querySelector(".ref");
 
     this.hide();
 
@@ -314,10 +317,16 @@ ManualUI.prototype = {
 
     show_ref: function() {
         this.ref_buttons.style.display = "block";
-        this.test_button.onclick = function() {
+        this.ref_button.parentNode.classList.remove("active");
+        this.test_button.parentNode.classList.add("active");
+        this.test_button.onclick = function () {
+            this.ref_button.parentNode.classList.remove("active");
+            this.test_button.parentNode.classList.add("active");
             this.runner.load(this.runner.current_test.url);
         }.bind(this);
         this.ref_button.onclick = function() {
+            this.ref_button.parentNode.classList.add("active");
+            this.test_button.parentNode.classList.remove("active");
             this.runner.load(this.runner.current_test.ref_url);
         }.bind(this);
     },
@@ -548,13 +557,15 @@ Runner.prototype = {
     },
 
     open_test_window: function() {
-        if(document.getElementById('iframe').checked) {
+        if (document.getElementById('iframe').checked) {
+            var placeHolder = document.getElementById('iFramePlaceholder');
+
             var iFrameElement = document.createElement("iframe");
             iFrameElement.id = 'outputWindow';
-            iFrameElement.style.width = 800;
-            iFrameElement.style.height = 600;
+            iFrameElement.style.width = placeHolder.clientWidth + "px";
+            iFrameElement.style.height = (window.innerHeight * 0.6) + "px";
             
-            document.getElementById('iFramePlaceholder').appendChild(iFrameElement);
+            placeHolder.appendChild(iFrameElement);
             this.test_window = iFrameElement.contentWindow;
         } else {
             this.test_window = window.open("about:blank", 800, 600);
@@ -748,5 +759,5 @@ window.completion_callback = function(tests, status) {
                      subtest_results);
 };
 
-window.addEventListener("DOMContentLoaded", setup, false);
+window.addEventListener("load", setup, false);
 })();

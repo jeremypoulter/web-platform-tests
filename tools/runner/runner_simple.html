@@ -1,0 +1,226 @@
+﻿<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset=UTF-8>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Web tests</title>
+
+    <link rel='stylesheet' href='css/bootstrap.min.css'>
+    <link rel='stylesheet' href='css/bootstrap-theme.min.css'>
+    <link rel='stylesheet' href='tests.css'>
+    <script type="text/javascript" src="upload.js"></script>
+    <script type="text/javascript" src="testlist.js"></script>
+    <script type="text/javascript" src="runner.js"></script>
+    <script type="text/javascript" src="keynav.js"></script>
+    <script type="text/javascript" src="runner_simple.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div id="instructions"></div>
+
+        <div id="testControl" class="panel panel-default" style="display: none;">
+            <div class="panel-body">
+                <form id='options' class='form-horizontal' onsubmit='return false;'>
+                    <div id='testSelection'>
+                        <p>Include test types:</p>
+                        <div class="form-group">
+                            <label for="th" class="col-sm-3 control-label">JavaScript tests</label>
+                            <div class="col-sm-9">
+                                <input type="checkbox" checked value="testharness" id='th' class='test-type'>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ref" class="col-sm-3 control-label">Reference tests</label>
+                            <div class="col-sm-9">
+                                <input type="checkbox" value="reftest" id='ref' class='test-type'>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="man" class="col-sm-3 control-label">Manual tests</label>
+                            <div class="col-sm-9">
+                                <input type="checkbox" value="manual" id='man' class='test-type'>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="iframe" class="col-sm-3 control-label">Use iFrame</label>
+                            <div class="col-sm-9">
+                                <input type="checkbox" value="iframe" id='iframe' class='test-type'>
+                            </div>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <label for="pathSelector" class="col-sm-3 control-label">Run tests under path</label>
+                            <div class="col-sm-9">
+                                <select id='pathSelector' class='form-control'>
+                                    <option value="/">All</option>
+                                </select>
+                                <input value="/" id='path' class='path pathText form-control' disabled />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="timeout_multiplier" class="col-sm-3 control-label">Timeout Multiplier</label>
+                            <div class="col-sm-9">
+                                <input type="number" value="1" id='timeout_multiplier' class='timeout_multiplier form-control'>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="render" class="col-sm-3 control-label">Show output (debug)</label>
+                            <div class="col-sm-9">
+                                <input type="checkbox" id='render' value='render' class='render'>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="dumpit" class="col-sm-3 control-label">Dump JSON (debug)</label>
+                            <div class="col-sm-9">
+                                <input type="checkbox" id='dumpit'>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style='padding-top: 20px'>
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <button type="submit" class="btn btn-success toggleStart" disabled>Start</button>
+                            <button type='submit' class="btn btn-info togglePause" disabled>Pause</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="manualUI">
+            <div class='panel panel-primary'>
+                <div class='panel-heading'>
+                    <h4 class='panel-title'>Manual Testing</h4>
+                </div>
+                <div class="panel-body reftestUI">
+                    <p>
+                        The current test requires manual result marking.
+                        Test and ref should compare <strong class="refType text-primary"></strong>
+                    </p>
+
+                    <nav class="navbar navbar-default">
+                        <div class="container">
+                            <div class="navbar-collapse collapse">
+                                <ul class="nav navbar-nav">
+                                    <li><a class="test">Show Test</a></li>
+                                    <li><a class="ref">Show Reference</a></li>
+                                </ul>
+                            </div><!--/.nav-collapse -->
+                        </div>
+                    </nav>
+                </div>
+                <div class="panel-footer">
+                    <div>
+                        The test has:
+                    </div>
+                    <div class="row">
+                        <button class="btn btn-success pass col-md-6">Passed</button>
+                        <button class="btn btn-danger fail col-md-6">Failed</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div id="iFramePlaceholder" class="col-md-12">
+            </div>
+        </div>
+
+        <div id="output">
+            <div class="summary clearfix">
+                <h4>Progress</h4>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar"
+                         aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width: 0">
+                        0%
+                    </div>
+                </div>
+                <div id='test_url'></div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <table class='table'>
+                            <thead>
+                                <tr>
+                                    <th>Passed
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class='PASS'>0
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-3">
+                        <table class='table'>
+                            <thead>
+                                <tr>
+                                    <th>Failed
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class='FAIL'>0
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-3">
+                        <table class='table'>
+                            <thead>
+                                <tr>
+                                    <th>Timeouts
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class='TIMEOUT'>0
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-3">
+                        <table class='table'>
+                            <thead>
+                                <tr>
+                                    <th>Errors
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class='ERROR'>0
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="list-group">
+                    <a class="jsonResults list-group-item">Download JSON results</a>
+                    <!-- Uploads data to a server for tv-type devices -->
+                    <a class="uploadJsonResults list-group-item">Upload JSON results</a>
+                    <a href="tests.html" class="list-group-item">Back</a>
+                </div>
+                <br clear="both">
+                <div class="uploadLocation pull-right"
+                     style="font-weight:bold;font-size:large;"></div>
+            </div>
+            <div class="results">
+                <h4>Details</h4>
+                <table class='table'>
+                    <thead>
+                        <tr>
+                            <th>Test
+                            <th>Status
+                            <th>Message
+                            <th>Subtest Pass Rate
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

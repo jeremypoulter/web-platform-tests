@@ -13,6 +13,7 @@ var tests = [
   "FileAPI",
   "html",
   "html-imports",
+  "keyboardevents",
   "microdata",
   "page-visibility",
   "pointerlock",

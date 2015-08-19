@@ -43,7 +43,7 @@ function toggleIFrame()
 
 function startTest(index)
 {
-  var url = "index.html?autorun=1&path=/"+tests[index];
+  var url = "runner_simple.html?autorun=1&path=/"+tests[index];
   if(optionIFrame.checked) {
     url += "&iframe=1";
   }
