@@ -20,6 +20,5 @@
  */
   function mediaServerURL()
   {
-    //return "http://localhost:80/media/";
-    return "http://web-platform.test:80/media/";
+    return "http://web-platform.test:8000/media/";
   }
