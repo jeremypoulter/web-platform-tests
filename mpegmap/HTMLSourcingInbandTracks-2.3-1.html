@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TC 2.1-1 TextTrackList Order</title>
+    <link rel="author" title="CableLabs" href="html5@cablelabs.com">
+    <meta name="flags" content="[requirement flags]">
+    <meta name="assert" content="MPEG-DASH - UA creates ordered TextTrackList.">
+    <meta name="timeout" content="long">
+    <script src="testmedia.js"></script>
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <!-- Script Version: BETA -->
+    <!-- About the Media Resource
+
+         To verify DOM elements the details of the test media must be known prior to test execution.
+         This test script is bound to the test media file sourced in the script.
+         Sourcing a differnt test media file, or modifying that file, may invalidate the test.
+
+         The test media is an MPD with two audio, video and text adaptation sets. For each media
+         type, one adaptation set contains two ContentComponents.
+    -->
+  </head>
+  <body>
+    <p>
+      <a href="http://www.w3.org/TR/html5/references.html#refsINBANDTRACKS">Spec
+      Reference [INBANDTRACKS]</a>
+    </p>
+
+    <video id="v" width="400" height="300" autoplay controls></video>
+    <div id="log"></div>
+    <script>
+      var test = async_test("MPEG-DASH TextTracks attributes.");
+      var video = document.getElementById("v");
+      video.src = mediaServerURL() + "multistream.mpd"; 
+
+      var expectedTracks = [
+        {
+          id: "6",
+          kind: "captions",
+          language: "en",
+          label: ""
+        }, {
+          id: "1",
+          kind: "subtitles",
+          language: "fr",
+          label: ""
+        }, {
+          id: "2",
+          kind: "metadata",
+          language: "jp",
+          label: ""
+        }
+      ];
+
+      video.addEventListener("playing", function() {
+        video.pause();
+
+        test.step(function() {
+          assert_equals(video.textTracks.length, expectedTracks.length, "TextTrackList.length");
+          for (var i = 0; i < expectedTracks.length; ++i) {
+            var expected = expectedTracks[i];
+            var actual = video.textTracks[i];
+            for (var key in expected) {
+              assert_equals(actual[key], expected[key], "TextTrack[" + i + "]." + key);
+            }
+          }
+        });
+        test.done();
+      }, false);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" profiles="urn:mpeg:dash:profile:full:2011" mediaPresentationDuration="PT10S" minBufferTime="PT1S">
+    <BaseURL>multistream-dash/</BaseURL>
+    <Period duration="PT10S">
+        <!-- Video -->
+        <AdaptationSet id="0" mimeType="video/mp4" lang="zh">
+            <Role schemeIdUri="urn:mpeg:dash:role:2011" value="alternate"/>
+            <Representation id="r1" bandwidth="320000">
+                <SegmentList>
+                    <SegmentURL media="video-1.mp4"/>
+                </SegmentList>
+            </Representation>
+        </AdaptationSet>
+        <AdaptationSet mimeType="video/mp4">
+            <ContentComponent id="1" contentType="video" lang="en">
+                <Role schemeIdUri="urn:mpeg:dash:role:2011" value="commentary"/>
+            </ContentComponent>
+            <ContentComponent id="2" contentType="video" lang="de">
+                <Role schemeIdUri="urn:mpeg:dash:role:2011" value="main"/>
+                <Role schemeIdUri="urn:mpeg:dash:role:2011" value="commentary"/>
+            </ContentComponent>
+            <Representation id="r2" bandwidth="320000">
+                <SegmentList>
+                    <SegmentURL media="video-2.mp4"/>
+                </SegmentList>
+            </Representation>
+        </AdaptationSet>
+
+        <!-- Audio -->
+        <AdaptationSet id="3" mimeType="audio/mp3" lang="zh">
+            <Role schemeIdUri="urn:mpeg:dash:role:2011" value="alternate"/>
+            <Representation id="r1" bandwidth="32000">
+                <SegmentList>
+                    <SegmentURL media="audio-1.mp4"/>
+                </SegmentList>
+            </Representation>
+        </AdaptationSet>
+        <AdaptationSet mimeType="audio/mp4">
+            <ContentComponent id="1" contentType="audio" lang="en">
+                <Role schemeIdUri="urn:mpeg:dash:role:2011" value="commentary"/>
+            </ContentComponent>
+            <ContentComponent id="2" contentType="audio" lang="de">
+                <Role schemeIdUri="urn:mpeg:dash:role:2011" value="main"/>
+                <Role schemeIdUri="urn:mpeg:dash:role:2011" value="commentary"/>
+            </ContentComponent>
+            <Representation id="r2" bandwidth="32000">
+                <SegmentList>
+                    <SegmentURL media="audio-2.mp4"/>
+                </SegmentList>
+            </Representation>
+        </AdaptationSet>
+
+        <!-- Text -->
+        <AdaptationSet id="6" mimeType="text/vtt" lang="en">
+            <Role schemeIdUri="urn:mpeg:dash:role:2011" value="caption"/>
+            <Representation id="r1" bandwidth="32">
+                <SegmentList>
+                    <SegmentURL media="text-1.vtt"/>
+                </SegmentList>
+            </Representation>
+        </AdaptationSet>
+        <AdaptationSet mimeType="text/vtt">
+            <ContentComponent id="1" contentType="text" lang="fr">
+                <Role schemeIdUri="urn:mpeg:dash:role:2011" value="subtitle"/>
+            </ContentComponent>
+            <ContentComponent id="2" contentType="text" lang="jp"/>
+            <Representation id="r2" bandwidth="32">
+                <SegmentList>
+                    <SegmentURL media="text-2.mp4"/>
+                </SegmentList>
+            </Representation>
+        </AdaptationSet>
+    </Period>
+</MPD>

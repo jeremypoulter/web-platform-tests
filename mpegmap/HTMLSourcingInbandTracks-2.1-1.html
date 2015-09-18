@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>TC 4.1-1 TextTrackList Order</title>
+    <link rel="author" title="CableLabs" href="html5@cablelabs.com">
+    <meta name="flags" content="[requirement flags]">
+    <meta name="assert" content="MPEG-DASH - UA creates VTTCues.">
+    <meta name="timeout" content="long">
+    <script src="testmedia.js"></script>
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <!-- Script Version: BETA -->
+    <!-- About the Media Resource
+
+         To verify DOM elements the details of the test media must be known prior to test execution.
+         This test script is bound to the test media file sourced in the script.
+         Sourcing a differnt test media file, or modifying that file, may invalidate the test.
+
+         The test media is an MPD with two audio, video and text adaptation sets. For each media
+         type, one adaptation set contains two ContentComponents.
+    -->
+  </head>
+  <body>
+    <p>
+      <a href="http://www.w3.org/TR/html5/references.html#refsINBANDTRACKS">Spec
+      Reference [INBANDTRACKS]</a>
+    </p>
+
+    <video id="v" width="400" height="300" autoplay controls></video>
+    <div id="log"></div>
+    <script>
+      var test = async_test("MPEG-DASH TextTracks attributes.");
+      var video = document.getElementById("v");
+      video.src = mediaServerURL() + "multistream.mpd"; 
+
+      var expectedCues = {
+        "1": [
+            "Un",
+            "Deux",
+            "Trois",
+            "Quatre",
+            "Cinq",
+            "Six",
+            "Sept",
+            "Huit",
+            "Neuf",
+            "Dix"
+        ],
+        "2": [
+            "一",
+            "二",
+            "三",
+            "四",
+            "五",
+            "六",
+            "七",
+            "八",
+            "九",
+            "十"
+        ],
+        "6": [
+            "One",
+            "Two",
+            "Three",
+            "Four",
+            "Five",
+            "Six",
+            "Seven",
+            "Eight",
+            "Nine",
+            "Ten"
+        ]
+      };
+
+      video.textTracks.addEventListener("addtrack", function(e) {
+        e.track.mode = "hidden";
+      });
+      video.addEventListener("ended", function() {
+        video.pause();
+
+        test.step(function() {
+          for (var trackId in expectedCues) {
+            var track = video.textTracks.getTrackById(trackId);
+            assert_not_equals(track, null, "TextTrack[id=" + trackId + "] exists");
+            assert_equals(track.cues.length, expectedCues[trackId].length,
+                "TextTrack[id=" + trackId + "].cues.length");
+            for (var i = 0; i < track.cues.length; ++i) {
+                assert_equals(track.cues[i].text, expectedCues[trackId][i],
+                    "TextTrack[id=" + trackId + "].cues[" + i + "].text");
+                assert_equals(track.cues[i].id, "" + (i + 1),
+                    "TextTrack[id=" + trackId + "].cues[" + i + "].id");
+                assert_equals(track.cues[i].startTime, i,
+                    "TextTrack[id=" + trackId + "].cues[" + i + "].startTime");
+                assert_equals(track.cues[i].endTime, i + 1,
+                    "TextTrack[id=" + trackId + "].cues[" + i + "].end");
+                assert_equals(track.cues[i].pauseOnExit, false,
+                    "TextTrack[id=" + trackId + "].cues[" + i + "].pauseOnExit");
+            }
+          }
+        });
+        test.done();
+      }, false);
+    </script>
+  </body>
+</html>
