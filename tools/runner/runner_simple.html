@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang=en>
 <head>
     <meta charset=UTF-8>
@@ -18,6 +18,13 @@
 
 <body>
     <div class="container">
+        <div id="errorMessage" style="display: none;">
+            <div class="alert alert-danger" id="errorMessageText"></div>
+            <div class="list-group" >
+                <a href="tests.html" class="list-group-item keynav">Back</a>
+            </div>
+        </div>
+
         <div id="instructions"></div>
 
         <div id="testControl" class="panel panel-default" style="display: none;">
@@ -46,7 +53,7 @@
                         <div class="form-group">
                             <label for="iframe" class="col-sm-3 control-label">Use iFrame</label>
                             <div class="col-sm-9">
-                                <input type="checkbox" value="iframe" id='iframe' class='test-type'>
+                                <input type="checkbox" value="iframe" id='iframe'>
                             </div>
                         </div>
                         <div class="form-group has-feedback">

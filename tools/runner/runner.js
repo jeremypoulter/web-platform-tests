@@ -608,7 +608,18 @@ Runner.prototype = {
                 tests = this.test_types.join(" tests or ") + " tests";
             }
             var message = "No " + tests + " found in this path."
-            document.querySelector(".path").setCustomValidity(message);
+
+            var errorMessage = document.getElementById("errorMessage");
+            var errorMessageText = document.getElementById("errorMessageText");
+            if (null != errorMessage && null != errorMessageText)
+            {
+                errorMessage.style.display = 'block';
+                errorMessageText.innerText = message;
+            }
+            else
+            {
+                document.querySelector(".path").setCustomValidity(message);
+            }
         }
     },
 
