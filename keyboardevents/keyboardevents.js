@@ -51,28 +51,28 @@ var testKeyKeydownKeyup = function (keyName)
     var initTimer = setInterval(
       function ()
       {
-	// Check if there have been any key events since the last call
-	if (keyPressed) {
-	  elapsedTime += QUIET_INTERVAL;
-	  keyPressed = false;
-	  
-	  if (elapsedTime >= INIT_TIMEOUT) {
-	    // The test could not initialize
-	    stopListener();
-	    
-	    test.step(function() {
-	      assert_unreached("Unable to initialize test. "+
-	                       "Initialization requires "+QUIET_INTERVAL+"ms without "+
-	                       "receiving keyboard events");
-	    });
-	    test.done();
-	  }
-	  return;
-	}
+        // Check if there have been any key events since the last call
+        if (keyPressed) {
+          elapsedTime += QUIET_INTERVAL;
+          keyPressed = false;
+      
+          if (elapsedTime >= INIT_TIMEOUT) {
+            // The test could not initialize
+            stopListener();
+        
+            test.step(function() {
+              assert_unreached("Unable to initialize test. "+
+                               "Initialization requires "+QUIET_INTERVAL+"ms without "+
+                               "receiving keyboard events");
+            });
+            test.done();
+          }
+          return;
+        }
 
-	// No key events, so the test is initialized
-	stopListener();
-	keyTest();
+        // No key events, so the test is initialized
+        stopListener();
+        keyTest();
       },
       QUIET_INTERVAL);
   };
@@ -94,80 +94,83 @@ var testKeyKeydownKeyup = function (keyName)
     // Checks keydown events 
     var keyDownListener = function (keyEvent) {
       switch (keyState) {
-	
+    
       case KEY_INIT: // The expected value
-	keyState = KEY_DOWN_RECEIVED;
-	writeMessage("testlog",
-		     "Received expected keydown event");
+        keyState = KEY_DOWN_RECEIVED;
+        writeMessage("testlog",
+                     "Received expected keydown event");
 
-	if (keyEvent[keyAttribute] == keyName) {
-	  appendMessage("testlog",
-			"<br>Received expected key: '"+keyEvent[keyAttribute]+"'");
-	} else {
-	  appendMessage("testlog",
-			"<br><b>ERROR keyDownListener:</b> "+
-			"Received unexpected key: '"+keyEvent[keyAttribute]+"'");
-	}
+        if (keyEvent[keyAttribute] == keyName) {
+          appendMessage("testlog",
+                        "<br>Received expected key: '"+keyEvent[keyAttribute]+"'");
+        } else {
+          appendMessage("testlog",
+                        "<br><b>ERROR keyDownListener:</b> "+
+                        "Received unexpected key: '"+keyEvent[keyAttribute]+"'");
+        }
 
-	test.step(function() {
-	  assert_equals(keyEvent[keyAttribute], keyName, "keyDownListener: keyEvent.key");
-	});
-	test.done();
-	break;
+        test.step(function() {
+          assert_equals(keyEvent[keyAttribute], keyName, "keyDownListener: keyEvent.key");
+        });
+        test.done();
+        break;
 
       case KEY_DOWN_RECEIVED: 
-	appendMessage("testlog",
-		      "<br><b>ERROR keyDownListener:</b> "+
-		      "Received unexpected keydown event");
-	test.step(function() {
-	  assert_equals(keyState, KEY_INIT, "keyDownListener: keyState");
-	});
-	test.done();
-	break;
+        appendMessage("testlog",
+                      "<br><b>ERROR keyDownListener:</b> "+
+                      "Received unexpected keydown event");
+        test.step(function() {
+          assert_equals(keyState, KEY_INIT, "keyDownListener: keyState");
+        });
+        test.done();
+        break;
 
       case KEY_UP_RECEIVED:
-	appendMessage("testlog",
-		      "<br><b>ERROR keyDownListener:</b> "+
-		      "Received unexpected keydown event");
-	test.step(function() {
-	  assert_equals(keyState, KEY_INIT, "keyDownListener: keyState");
-	});
-	test.done();
-	break;
+        appendMessage("testlog",
+                      "<br><b>ERROR keyDownListener:</b> "+
+                      "Received unexpected keydown event");
+        test.step(function() {
+          assert_equals(keyState, KEY_INIT, "keyDownListener: keyState");
+        });
+        test.done();
+        break;
       }
+      return false;
     };
 
     // Checks keyup events 
     var keyUpListener = function () {
       switch (keyState) {
-	
+    
       case KEY_INIT:
-	writeMessage("testlog",
-		     "<b>ERROR keyUpListener</b> "+
-		     "Received unexpected keyup event");
-	test.step(function() {
-	  assert_equals(keyState, KEY_DOWN_RECEIVED, "keyUpListener: keyState");
-	});
-	test.done();
-	break;
-	
+        writeMessage("testlog",
+                     "<b>ERROR keyUpListener</b> "+
+                     "Received unexpected keyup event");
+        test.step(function() {
+            assert_equals(keyState, KEY_DOWN_RECEIVED, "keyUpListener: keyState");
+        });
+        test.done();
+        break;
+    
       case KEY_DOWN_RECEIVED: // The expected value
-	appendMessage("testlog",
-		      "<br>Received expected keyup event");
-	keyState = KEY_UP_RECEIVED;
-	keyPressed = true;
-	break;
+        appendMessage("testlog",
+                      "<br>Received expected keyup event");
+        keyState = KEY_UP_RECEIVED;
+        keyPressed = true;
+        break;
 
       case KEY_UP_RECEIVED:
-	appendMessage("testlog",
-		      "<br><b>ERROR keyUpListener</b> "+
-		      "Received unexpected keyup event");
-	test.step(function() {
-	  assert_equals(keyState, KEY_DOWN_RECEIVED, "keyUpListener: keyState");
-	});
-	test.done();
-	break;
+        appendMessage("testlog",
+                      "<br><b>ERROR keyUpListener</b> "+
+                      "Received unexpected keyup event");
+        test.step(function() {
+          assert_equals(keyState, KEY_DOWN_RECEIVED, "keyUpListener: keyState");
+        });
+        test.done();
+        break;
       }
+
+      return false;
     };
 
     var startListeners = function () {
@@ -184,47 +187,50 @@ var testKeyKeydownKeyup = function (keyName)
     // Start the key test
     startListeners();
     writeMessage("instructions",
-		 "Press and Release the <b>'"+keyName+"'</b> key one time."+
-		 "<br><b>Do not</b> include any modifiers (shift/caps lock/etc)");
+                 "Press and Release the <b>'"+keyName+"'</b> key one time."+
+                 "<br><b>Do not</b> include any modifiers (shift/caps lock/etc)");
     writeMessage("testlog",
-		 "Waiting for test key to be pressed...");
+                 "Waiting for test key to be pressed...");
+
+    // Make sure the document has the focus so we get the key presses
+    window.focus();
 
     var keyTimer = setInterval(
       function ()
       {
-	// Check if we've timed out
-	elapsedTime += KEY_INTERVAL;
-	if (elapsedTime >= KEY_TIMEOUT) {
-	  // The key was never pressed
-	  stopListeners();
-	  appendMessage("testlog",
-			"<br><b>ERROR keyTimer: </b> "+
-			"No key events were received.");
-	  test.step(function() {
-	    assert_greater_than(keyPressCount, 0, "keyTimer: keyPressCount");
-	  });
-	  test.done();
-	  return;
-	}
+        // Check if we've timed out
+        elapsedTime += KEY_INTERVAL;
+        if (elapsedTime >= KEY_TIMEOUT) {
+          // The key was never pressed
+          stopListeners();
+          appendMessage("testlog",
+                        "<br><b>ERROR keyTimer: </b> "+
+                        "No key events were received.");
+          test.step(function() {
+            assert_greater_than(keyPressCount, 0, "keyTimer: keyPressCount");
+          });
+          test.done();
+          return;
+        }
 
-	// See if the key was pressed
-	if (!keyPressed) {
-	  return;
-	}
-	
-	// Check if the key has been pressed for a while
-	keyPressCount++;
-	if (keyPressCount > 1) {
-	  stopListeners();
-	  return;
-	}
+        // See if the key was pressed
+        if (!keyPressed) {
+          return;
+        }
+    
+        // Check if the key has been pressed for a while
+        keyPressCount++;
+        if (keyPressCount > 1) {
+          stopListeners();
+          return;
+        }
       },
       KEY_INTERVAL);  
   };
 
 
   var test = async_test("KeyboardEvents: key == "+keyName);
-  
+
   initializeTest();
 
 };
