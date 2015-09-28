@@ -1,0 +1,12 @@
+﻿body
+{
+    margin: 3%;
+}
+
+
+.nav-focus
+{
+    border-color:red;
+    border-width:2px;
+    border-style: dashed;
+}

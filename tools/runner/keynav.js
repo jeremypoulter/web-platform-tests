@@ -126,10 +126,14 @@ KeyNav.prototype.selectDirection = function (dirX, dirY)
     {
         if(null != this.focusedElement)
         {
-            this.focusedElement.classList.remove("active");
+            var keynavClass = this.focusedElement.attributes["keynav-class"];
+            var keynavStyle = keynavClass != undefined ? keynavClass.value : "active";
+            this.focusedElement.classList.remove(keynavStyle);
         }
         this.focusedElement = newElement;
-        this.focusedElement.classList.add("active");
+        var keynavClass = this.focusedElement.attributes["keynav-class"];
+        var keynavStyle = keynavClass != undefined ? keynavClass.value : "active";
+        this.focusedElement.classList.add(keynavStyle);
     }
 }
 
