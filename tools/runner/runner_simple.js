@@ -14,6 +14,14 @@ function setup()
     test_button.parentNode.onclick = function () {
         test_button.click();
     }.bind(this);
+
+    // Tweek the back links to maintain the position and options in the main test 
+    // list
+    backLinks = document.querySelectorAll(".backlink");
+    for(var i = 0; i < backLinks.length; i++)
+    {
+        backLinks[i].href = "tests.html" + location.search;
+    }
 }
 
 window.addEventListener("load", setup, false);

@@ -74,10 +74,56 @@ function installHandler(testLink, i) {
     });
 }
 
-function start() {
-    var testList = document.getElementById("testList");
+function parseOptions()
+{
+    if (0 == location.search.length) {
+        return null;
+    }
+    var options = { };
 
-    for (var i = 0; i < tests.length; i++) {
+    var optionstrings = location.search.substring(1).split("&");
+    for (var i = 0, il = optionstrings.length; i < il; ++i) {
+        var opt = optionstrings[i];
+        //TODO: fix this for complex-valued options
+        options[opt.substring(0, opt.indexOf("="))] =
+            opt.substring(opt.indexOf("=") + 1);
+    }
+    return options;
+}
+
+function start()
+{
+    // Cache the option elements
+    optionTestsJavascript = document.getElementById("optionTestsJavascript");
+    optionTestsReference = document.getElementById("optionTestsReference");
+    optionTestsManual = document.getElementById("optionTestsManual");
+    optionIFrame = document.getElementById("optionIFrame");
+
+    options = [
+        optionIFrame,
+        optionTestsManual,
+        optionTestsReference,
+        optionTestsJavascript
+    ];
+
+    var selectedPath = null;
+
+    // Restore the state if any passed
+    var urlOptions = parseOptions();
+    if (null != urlOptions)
+    {
+        optionTestsJavascript.checked = urlOptions.testharness;
+        optionTestsReference.checked = urlOptions.reftest;
+        optionTestsManual.checked = urlOptions.manual;
+        optionIFrame.checked = urlOptions.iframe;
+        if (urlOptions.path) {
+            selectedPath = urlOptions.path.substring(1);
+        }
+    }
+
+    // Build list of the tests
+    for (var i = 0; i < tests.length; i++)
+    {
         var test = tests[i];
 
         var testLink = document.createElement("a");
@@ -91,21 +137,11 @@ function start() {
         testElement.appendChild(testLink);
 
         testList.appendChild(testLink);
+        if(null != selectedPath && test == selectedPath)
+        {
+            focusItem(i, true);
+        }
     }
-
-    optionTestsJavascript = document.getElementById("optionTestsJavascript");
-    optionTestsReference = document.getElementById("optionTestsReference");
-    optionTestsManual = document.getElementById("optionTestsManual");
-    optionIFrame = document.getElementById("optionIFrame");
-
-    options = [
-        optionIFrame,
-        optionTestsManual,
-        optionTestsReference,
-        optionTestsJavascript
-    ];
-
-    // focusItem(indexSelected);
 }
 
 function onKey(e) {
