@@ -20,78 +20,67 @@
     <div class="container">
         <div id="errorMessage" style="display: none;">
             <div class="alert alert-danger" id="errorMessageText"></div>
-            <div class="list-group" >
-                <a href="tests.html" class="backlink list-group-item keynav">Back</a>
+            <div class="list-group">
+                <a class="backButton list-group-item keynav">Back</a>
             </div>
         </div>
 
         <div id="instructions"></div>
 
-        <div id="testControl" class="panel panel-default" style="display: none;">
-            <div class="panel-body">
-                <form id='options' class='form-horizontal' onsubmit='return false;'>
-                    <div id='testSelection'>
-                        <p>Include test types:</p>
-                        <div class="form-group">
-                            <label for="th" class="col-sm-3 control-label">JavaScript tests</label>
-                            <div class="col-sm-9">
-                                <input type="checkbox" value="testharness" id='th' class='test-type'>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="ref" class="col-sm-3 control-label">Reference tests</label>
-                            <div class="col-sm-9">
-                                <input type="checkbox" value="reftest" id='ref' class='test-type'>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="man" class="col-sm-3 control-label">Manual tests</label>
-                            <div class="col-sm-9">
-                                <input type="checkbox" value="manual" id='man' class='test-type'>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="iframe" class="col-sm-3 control-label">Use iFrame</label>
-                            <div class="col-sm-9">
-                                <input type="checkbox" value="iframe" id='iframe'>
-                            </div>
-                        </div>
-                        <div class="form-group has-feedback">
-                            <label for="pathSelector" class="col-sm-3 control-label">Run tests under path</label>
-                            <div class="col-sm-9">
-                                <select id='pathSelector' class='form-control'>
-                                    <option value="/">All</option>
-                                </select>
-                                <input value="/" id='path' class='path pathText form-control' disabled />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="timeout_multiplier" class="col-sm-3 control-label">Timeout Multiplier</label>
-                            <div class="col-sm-9">
-                                <input type="number" value="1" id='timeout_multiplier' class='timeout_multiplier form-control'>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="render" class="col-sm-3 control-label">Show output (debug)</label>
-                            <div class="col-sm-9">
-                                <input type="checkbox" id='render' value='render' class='render'>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="dumpit" class="col-sm-3 control-label">Dump JSON (debug)</label>
-                            <div class="col-sm-9">
-                                <input type="checkbox" id='dumpit'>
-                            </div>
-                        </div>
+        <div id="testControl">
+            <form id='options' onsubmit='return false;'>
+                <div id='testSelection' class="list-group hide-during-test-run">
+                    <div class="list-group-item row keynav" keynav-selector="#th">
+                        <input type="checkbox" value="testharness" id='th' class='test-type col-sm-1' checked="checked">
+                        <label for="th" class="control-label col-sm-11">JavaScript tests</label>
+                    </div>
+                    <div class="list-group-item row keynav" keynav-selector="#ref">
+                        <input type="checkbox" value="reftest" id='ref' class='test-type col-sm-1'>
+                        <label for="ref" class="control-label col-sm-11">Reference tests</label>
+                    </div>
+                    <div class="list-group-item row keynav" keynav-selector="#man">
+                        <input type="checkbox" value="manual" id='man' class='test-type col-sm-1'>
+                        <label for="man" class="control-label col-sm-11">Manual tests</label>
+                    </div>
+                    <div class="list-group-item row keynav" keynav-selector="#iframe">
+                        <input type="checkbox" value="iframe" id='iframe' class='col-sm-1' checked="checked">
+                        <label for="iframe" class="control-label col-sm-11">Use iFrame</label>
+                    </div>
+                    <div class="list-group-item row keynav" keynav-selector="#timeout_multiplier" style="display:none">
+                        <label for="timeout_multiplier" class="control-label col-sm-3">Timeout Multiplier</label>
+                        <input type="number" value="1" id='timeout_multiplier' class='timeout_multiplier form-control col-sm-9'>
+                    </div>
+                    <div class="list-group-item row keynav" keynav-selector="#render" style="display:none">
+                        <input type="checkbox" id='render' value='render' class='render col-sm-1'>
+                        <label for="render" class="control-label col-sm-11">Show output (debug)</label>
+                    </div>
+                    <div class="list-group-item row keynav" keynav-selector="#dumpit" style="display:none">
+                        <input type="checkbox" id='dumpit' class='col-sm-1'>
+                        <label for="dumpit" class="control-label col-sm-11">Dump JSON (debug)</label>
                     </div>
 
-                    <div class="form-group" style='padding-top: 20px'>
-                        <div class="col-sm-offset-3 col-sm-9">
-                            <button type="submit" class="btn btn-success toggleStart" disabled>Start</button>
-                            <button type='submit' class="btn btn-info togglePause" disabled>Pause</button>
+                    <div class="list-group-item has-feedbak row" style="display:none">
+                        <label for="pathSelector" class="col-sm-3 control-label">Run tests under path</label>
+                        <div class="col-sm-9">
+                            <select id='pathSelector' class='form-control'>
+                                <option value="/">All</option>
+                            </select>
+                            <input value="/" id='path' class='path pathText form-control' disabled />
                         </div>
                     </div>
-                </form>
+                </div>
+
+                <div id="testList" class="list-group hide-during-test-run">
+                </div>
+            </form>
+
+            <div class="panel-body">
+                <div class="form-group row" style='padding-top: 20px; display:none;'>
+                    <div class="col-sm-offset-3 col-sm-9">
+                        <button type="submit" class="btn btn-success toggleStart" disabled>Start</button>
+                        <button type='submit' class="btn btn-info togglePause" disabled>Pause</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -110,8 +99,8 @@
                         <div class="container">
                             <div class="navbar-collapse collapse">
                                 <ul class="nav navbar-nav">
-                                    <li class="keynav" keynav-class="nav-focus"><a class="test">Show Test</a></li>
-                                    <li class="keynav" keynav-class="nav-focus"><a class="ref">Show Reference</a></li>
+                                    <li class="keynav" keynav-class="nav-focus" keynav-selector=".test"><a class="test">Show Test</a></li>
+                                    <li class="keynav" keynav-class="nav-focus" keynav-selector=".ref"><a class="ref">Show Reference</a></li>
                                 </ul>
                             </div><!--/.nav-collapse -->
                         </div>
@@ -207,7 +196,7 @@
                     <a class="jsonResults list-group-item keynav">Download JSON results</a>
                     <!-- Uploads data to a server for tv-type devices -->
                     <a class="uploadJsonResults list-group-item keynav">Upload JSON results</a>
-                    <a href="tests.html" class="backlink list-group-item keynav">Back</a>
+                    <a class="backButton list-group-item keynav">Back</a>
                 </div>
                 <br clear="both">
                 <div class="uploadLocation pull-right"

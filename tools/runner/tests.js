@@ -1,16 +1,20 @@
 /*jslint browser: true, sloppy: true, vars: true, white: true, indent: 2 */
+var resultsServerEndpoint = "http://localhost:35127/api.php/results";
+var resultsSessionEndpoint = false;
 
-
+var optionIndexRemoteResults = -6;
+var optionIndexNewSession = -5;
 var optionIndexTestsJavascript = -4;
 var optionIndexTestsReference = -3;
 var optionIndexTestsManual = -2;
 var optionIndexIFrame = -1;
 
-var firstOption = optionIndexTestsJavascript;
+var firstOption = optionIndexRemoteResults;
 var lastOption = optionIndexIFrame;
 
 var indexSelected = firstOption - 1;
 
+var optionRemoteResults = null;
 var optionTestsJavascript = null;
 var optionTestsReference = null;
 var optionTestsManual = null;
@@ -18,7 +22,8 @@ var optionIFrame = null;
 
 var options = null;
 
-function isElementInViewport(el) {
+function isElementInViewport(el)
+{
     var rect = el.getBoundingClientRect();
 
     return (
@@ -29,7 +34,8 @@ function isElementInViewport(el) {
     );
 }
 
-function focusItem(item, scrollToTop) {
+function focusItem(item, scrollToTop)
+{
     if (indexSelected >= firstOption) {
         document.getElementById("test_" + indexSelected).classList.remove("active");
     }
@@ -49,7 +55,8 @@ function toggleCheckbox(checkboxId) {
     checkbox.checked = !checkbox.checked;
  }
 
-function startTest(index) {
+function startTest(index)
+{
     var url = "runner_simple.html?autorun=1&path=/" + tests[index];
     if (optionIFrame.checked) {
         url += "&iframe=1";
@@ -94,6 +101,7 @@ function parseOptions()
 function start()
 {
     // Cache the option elements
+    optionRemoteResults = document.getElementById("optionRemoteResults");
     optionTestsJavascript = document.getElementById("optionTestsJavascript");
     optionTestsReference = document.getElementById("optionTestsReference");
     optionTestsManual = document.getElementById("optionTestsManual");
@@ -103,7 +111,9 @@ function start()
         optionIFrame,
         optionTestsManual,
         optionTestsReference,
-        optionTestsJavascript
+        optionTestsJavascript,
+        null,
+        optionRemoteResults
     ];
 
     var selectedPath = null;
@@ -144,8 +154,25 @@ function start()
     }
 }
 
-function onKey(e) {
-    switch (e.keyCode) {
+function newRemoteSession()
+{
+    ajax(resultsServerEndpoint, "POST", "", function (e)
+    {
+        if(e.session)
+        {
+            document.getElementById("sessionId").innerText = e.session.id;
+            resultsSessionEndpoint = e.session.href;
+        }
+    },
+    function ()
+    {
+    });
+}
+
+function onKey(e)
+{
+    switch (e.keyCode)
+    {
         case 38 /* "ArrowUp" */:
             if (indexSelected > firstOption) {
                 focusItem(indexSelected - 1, true);
@@ -164,6 +191,8 @@ function onKey(e) {
         case 32 /* "Space" */:
             if (indexSelected > lastOption) {
                 startTest(indexSelected);
+            } else if (optionIndexNewSession == indexSelected) {
+                newRemoteSession();
             } else if (firstOption <= indexSelected && indexSelected <= lastOption) {
                 toggleCheckbox(indexSelected);
             }
@@ -176,3 +205,32 @@ function onKey(e) {
     return false;
 }
 
+
+// Ajax
+var ajax = function (url, method, data, onComplete, onError)
+{
+    // Get the Ajax object
+    var xhr = new XMLHttpRequest();
+
+    // This function is invoked when the call finishes
+    xhr.onreadystatechange = function () 
+    {
+        if (xhr.readyState == 4) {
+            // This is a skel of what func needs to do
+            if(xhr.status  == 200) {
+                if(onComplete) {
+                    onComplete(JSON.parse(xhr.responseText));
+                }
+            } else {
+                if (onError) {
+                    onError();
+                }
+            }
+        }
+    }
+
+    // The ajax call itself
+    xhr.open(method, url, true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.send(data, data.length);
+}

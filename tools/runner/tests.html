@@ -15,6 +15,8 @@
     </head>
     <body onload="start()" onkeydown="return onKey(event)">
         <div id="testOptions" class="list-group">
+            <div id="test_-6" class="list-group-item" onclick="toggleCheckbox(-6)"> <input id="optionRemoteResults" type="checkbox" checked="checked" /> Upload test results</div>
+            <div class="list-group-item" > <button id="test_-5" onclick="newRemoteSession()" class="btn btn-default"> New session </button> session <span id="sessionId" class=""></span> </div>
             <div id="test_-4" class="list-group-item" onclick="toggleCheckbox(-4)"> <input id="optionTestsJavascript" type="checkbox" checked="checked" /> JavaScript tests </div>
             <div id="test_-3" class="list-group-item" onclick="toggleCheckbox(-3)"> <input id="optionTestsReference" type="checkbox" /> Reference tests </div>
             <div id="test_-2" class="list-group-item" onclick="toggleCheckbox(-2)"> <input id="optionTestsManual" type="checkbox" /> Manual tests </div>

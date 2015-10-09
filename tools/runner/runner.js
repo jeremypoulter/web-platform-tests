@@ -140,6 +140,10 @@ VisualOutput.prototype = {
         this.results_table.appendChild(document.createElement("tbody"));
     },
 
+    hide: function() {
+        
+    },
+
     on_start: function() {
         this.clear();
         this.elem.style.display = "block";
@@ -501,6 +505,69 @@ Results.prototype = {
     }
 };
 
+function ServerResults(runner, endpoint)
+{
+    this.runner = runner;
+    this.endpoint = endpoint;
+
+    this.runner.start_callbacks.push(this.on_start.bind(this));
+}
+
+ServerResults.prototype = {
+    on_start: function () {
+    },
+
+    set: function (test, status, message, subtests)
+    {
+        var dataObject = {
+            "test": test,
+            "subtests": subtests,
+            "status": status,
+            "message": message
+        };
+        var data = JSON.stringify(dataObject);
+
+        // Retries
+        var MAX_RETRIES = 4;
+        var retryCount = 0;
+
+        // Get the Ajax object
+        var xhr = new XMLHttpRequest();
+
+        // This function is invoked when the call finishes
+        xhr.onreadystatechange = function ()
+        {
+            if (xhr.readyState == 4)
+            {
+                // This is a skel of what func needs to do
+                /*
+                if(xhr.status  == 200) {
+                    alert("Received:\n" + xhr.responseText); 
+                } else {
+                    alert("Error code: " + xhr.status);
+                }
+                */
+                /*
+                if (! func(xhr)) {
+                    if (retryCount < MAX_RETRIES) {
+                        // Try again
+                        xhr.open("POST", url, true);
+                        xhr.send(null);
+                        retryCount++;
+                    }
+                }
+                */
+            }
+        }
+
+        // The ajax call itself
+        xhr.open("POST", this.endpoint, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(data, data.length);
+    },
+};
+
+
 function TopLevelTestList(inputBox, selectList)
 {
   this.inputBox = inputBox;
@@ -521,7 +588,7 @@ TopLevelTestList.prototype = {
     }
 };
 
-function Runner(manifest_path) {
+function Runner(manifest_path, options) {
     this.server = location.protocol + "//" + location.host;
     this.manifest = new Manifest(manifest_path);
     this.path = null;
@@ -544,6 +611,7 @@ function Runner(manifest_path) {
     this.done_callbacks = [];
 
     this.results = new Results(this);
+    this.serverResults = options.results_endpoint ? new ServerResults(this, options.results_endpoint) : false;
 
     this.start_after_manifest_load = false;
     this.manifest.load(this.manifest_loaded.bind(this));
@@ -602,6 +670,11 @@ Runner.prototype = {
                 callback();
             });
             this.run_next_test();
+
+            var elements = document.querySelectorAll(".hide-during-test-run");
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = "none";
+            };
         } else {
             var tests = "tests";
             if (this.test_types.length < 3) {
@@ -638,7 +711,8 @@ Runner.prototype = {
     on_result: function(status, message, subtests) {
         clearTimeout(this.timeout);
         this.results.set(this.current_test, status, message, subtests);
-        this.result_callbacks.forEach(function(callback) {
+        // this.serverResults.set(this.current_test, status, message, subtests);
+        this.result_callbacks.forEach(function (callback) {
             callback(this.current_test, status, message, subtests);
         }.bind(this));
         this.run_next_test();
@@ -748,7 +822,21 @@ function setup() {
     new VisualOutput(document.getElementById("output"), runner);
     new TopLevelTestList(document.getElementById("path"), document.getElementById("pathSelector"));
 
-    if (options.autorun === "1") {
+    // If there are any 'back' buttons then set them up to restore the state
+    var backButtons = document.querySelectorAll(".backButton");
+    for (var i = 0; i < backButtons.length; i++) {
+        backButtons[i].addEventListener('click', function ()
+        {
+            runner.done();
+            var elements = document.querySelectorAll(".hide-during-test-run");
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = "inherit";
+            };
+        });
+    }
+
+    if (options.autorun === "1")
+    {
         // Hide the instructions and controls
         document.getElementById('instructions').style.display = "none";
         document.getElementById('testSelection').style.display = "none";

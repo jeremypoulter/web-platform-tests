@@ -7,6 +7,7 @@
 function KeyNav(selector) {
     this.focusedElement = null;
     this.navElements = null;
+    this.selector = selector;
 
     // Update the list of visiable elements we can navigate
 
@@ -31,8 +32,13 @@ function KeyNav(selector) {
 
             case 13 /* "Return" */:
             case 32 /* "Space" */:
-                if (this.focusedElement != null) {
-                    this.focusedElement.click();
+                if (this.focusedElement != null)
+                {
+                    var keynavSelector = this.focusedElement.attributes["keynav-selector"];
+                    var clickElement = (keynavSelector != undefined) ? 
+                        clickElement = this.focusedElement.querySelector(keynavSelector.value) :
+                        this.focusedElement;
+                    clickElement.click();
                 }
                 break;
 
@@ -145,7 +151,7 @@ KeyNav.prototype.findVisibleNavigationElements = function () {
     // Find all the visible elements with the class 'keynav'
     var visibleElements = [];
 
-    var elements = document.querySelectorAll(".keynav");
+    var elements = document.querySelectorAll(this.selector);
     for (var i = 0; i < elements.length; i++) {
         if (this.isVisible(elements[i])) {
             visibleElements.push(elements[i]);
