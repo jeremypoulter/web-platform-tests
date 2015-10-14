@@ -4,7 +4,8 @@
  * 
  * Looks for elements with the class 'keynav' and manages simple 'D-Pad' navigation 
  */
-function KeyNav(selector) {
+function KeyNav(selector)
+{
     this.focusedElement = null;
     this.navElements = null;
     this.selector = selector;
@@ -58,7 +59,7 @@ KeyNav.prototype.selectDirection = function (dirX, dirY)
     // Update the list of elements we care about
     var visibleElements = this.findVisibleNavigationElements();
     if (-1 == visibleElements.indexOf(this.focusedElement)) {
-        this.focusedElement = null;
+        this.clearFocusedElement();
     }
 
     // Work out where we are going to search for a new element to focus
@@ -130,20 +131,30 @@ KeyNav.prototype.selectDirection = function (dirX, dirY)
     // Have found an element? If so mark it as active
     if (null != newElement)
     {
-        if(null != this.focusedElement)
-        {
-            var keynavClass = this.focusedElement.attributes["keynav-class"];
-            var keynavStyle = keynavClass != undefined ? keynavClass.value : "active";
-            this.focusedElement.classList.remove(keynavStyle);
-        }
-        this.focusedElement = newElement;
+        this.highlightFocusedElement(newElement, -1 != dirY);
+    }
+}
+
+KeyNav.prototype.clearFocusedElement = function ()
+{
+    if (null != this.focusedElement) {
         var keynavClass = this.focusedElement.attributes["keynav-class"];
         var keynavStyle = keynavClass != undefined ? keynavClass.value : "active";
-        this.focusedElement.classList.add(keynavStyle);
+        this.focusedElement.classList.remove(keynavStyle);
+        this.focusedElement = null;
+    }
+}
 
-        if (false === this.isElementInViewport(this.focusedElement)) {
-            this.focusedElement.scrollIntoView(-1 != dirY);
-        }
+KeyNav.prototype.highlightFocusedElement = function (newElement, alignToTop)
+{
+    this.clearFocusedElement();
+    this.focusedElement = newElement;
+    var keynavClass = this.focusedElement.attributes["keynav-class"];
+    var keynavStyle = keynavClass != undefined ? keynavClass.value : "active";
+    this.focusedElement.classList.add(keynavStyle);
+
+    if (false === this.isElementInViewport(this.focusedElement)) {
+        this.focusedElement.scrollIntoView(alignToTop);
     }
 }
 

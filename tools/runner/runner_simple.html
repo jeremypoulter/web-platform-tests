@@ -29,7 +29,7 @@
 
         <div id="testControl">
             <form id='options' onsubmit='return false;'>
-                <div id='testSelection' class="list-group hide-during-test-run">
+                <div id='testSelection' class="list-group test-list">
                     <div class="list-group-item row keynav" keynav-selector="#th">
                         <input type="checkbox" value="testharness" id='th' class='test-type col-sm-1' checked="checked">
                         <label for="th" class="control-label col-sm-11">JavaScript tests</label>
@@ -70,7 +70,7 @@
                     </div>
                 </div>
 
-                <div id="testList" class="list-group hide-during-test-run">
+                <div id="testList" class="list-group test-list">
                 </div>
             </form>
 
@@ -124,7 +124,7 @@
             </div>
         </div>
 
-        <div id="output">
+        <div id="output" class="test-runner">
             <div class="summary clearfix">
                 <h4>Progress</h4>
                 <div class="progress">

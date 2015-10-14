@@ -671,9 +671,13 @@ Runner.prototype = {
             });
             this.run_next_test();
 
-            var elements = document.querySelectorAll(".hide-during-test-run");
+            var elements = document.querySelectorAll(".test-list");
             for (var i = 0; i < elements.length; i++) {
                 elements[i].style.display = "none";
+            };
+            var elements = document.querySelectorAll(".test-runner");
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = "block";
             };
         } else {
             var tests = "tests";
@@ -824,13 +828,20 @@ function setup() {
 
     // If there are any 'back' buttons then set them up to restore the state
     var backButtons = document.querySelectorAll(".backButton");
-    for (var i = 0; i < backButtons.length; i++) {
+    for (var i = 0; i < backButtons.length; i++)
+    {
         backButtons[i].addEventListener('click', function ()
         {
-            runner.done();
-            var elements = document.querySelectorAll(".hide-during-test-run");
+            if(!runner.done_flag) {
+                runner.done();
+            }
+            var elements = document.querySelectorAll(".test-list");
             for (var i = 0; i < elements.length; i++) {
-                elements[i].style.display = "inherit";
+                elements[i].style.display = "block";
+            };
+            var elements = document.querySelectorAll(".test-runner");
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = "none";
             };
         });
     }
