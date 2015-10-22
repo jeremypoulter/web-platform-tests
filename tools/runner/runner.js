@@ -1,9 +1,55 @@
+/// <reference path="testlist.js" />
+/// <reference path="upload.js" />
+
 /*jshint nonew: false */
 (function() {
 "use strict";
 var runner;
 var testharness_properties = {output:false,
                               timeout_multiplier:1};
+
+function Config() {
+    this.path_list = ['/config.default.json', '/config.json'];
+    this.count = 0;
+}
+
+Config.prototype =
+{
+    load: function (loaded_callback)
+    {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function ()
+        {
+            if (xhr.readyState !== 4) {
+                return;
+            }
+            if (xhr.status === 200 ) 
+            {
+                var data = JSON.parse(xhr.responseText);
+                for (var index in data) {
+                    this[index] = data[index];
+                }
+            }
+
+            if (this.count < this.path_list.length) {
+                this.load(loaded_callback);
+            } else {
+                loaded_callback();
+            }
+        }.bind(this);
+        xhr.open("GET", this.path_list[this.count++]);
+        xhr.send(null);
+    },
+
+    by_type:function(type) {
+        if (this.data.items.hasOwnProperty(type)) {
+            return this.data.items[type];
+        } else {
+            return [];
+        }
+    }
+};
+
 
 function Manifest(path) {
     this.data = null;
@@ -12,9 +58,9 @@ function Manifest(path) {
 }
 
 Manifest.prototype = {
-    load: function(loaded_callback) {
+    load: function (loaded_callback) {
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = function () {
             if (xhr.readyState !== 4) {
                 return;
             }
@@ -28,7 +74,7 @@ Manifest.prototype = {
         xhr.send(null);
     },
 
-    by_type:function(type) {
+    by_type: function (type) {
         if (this.data.items.hasOwnProperty(type)) {
             return this.data.items[type];
         } else {
@@ -36,6 +82,7 @@ Manifest.prototype = {
         }
     }
 };
+
 
 function ManifestIterator(manifest, path, test_types) {
     this.manifest = manifest;
@@ -243,11 +290,11 @@ VisualOutput.prototype = {
     var u = this.elem.querySelector(".uploadJsonResults");
     u.href = "";
     u.style.display = "inherit";
-    u.onclick = function () {
+    u.onclick = function ()
+    {
         var up = "http://web-platform.test/upload/"
-        ajax(up+"upload.php",
-         function () { return true; },
-         "file="+file+"&log="+encodeURIComponent(json));
+        ajax(up+"upload.php", "POST",
+             "file="+file+"&log="+encodeURIComponent(json));
         d.innerHTML = "Your file may be downloaded from:<br>"+
                       "<a href='"+up+"download.html?id="+file+"'>"+
                       up+"download.html?id="+file+"</a>";
@@ -588,9 +635,11 @@ TopLevelTestList.prototype = {
     }
 };
 
-function Runner(manifest_path, options) {
+function Runner(manifest_path, options)
+{
     this.server = location.protocol + "//" + location.host;
     this.manifest = new Manifest(manifest_path);
+    this.config = new Config();
     this.path = null;
     this.test_types = null;
     this.manifest_iterator = null;
@@ -611,10 +660,30 @@ function Runner(manifest_path, options) {
     this.done_callbacks = [];
 
     this.results = new Results(this);
-    this.serverResults = options.results_endpoint ? new ServerResults(this, options.results_endpoint) : false;
+    this.serverResults = false;
+
+    this.endpoints = [];
+    this.resultsSessionEndpoint = false;
 
     this.start_after_manifest_load = false;
     this.manifest.load(this.manifest_loaded.bind(this));
+    this.config.load(this.config_loaded.bind(this));
+
+    var new_session = document.getElementById("new_session");
+    new_session.addEventListener('click', function () {
+        this.create_new_session();
+    }.bind(this));
+
+    var upload_results = document.getElementById("upload_results");
+    upload_results.addEventListener('change', function () {
+        if (upload_results.checked) {
+            new_session.parentNode.style.display = 'inherit';
+            this.create_new_session();
+        } else {
+            new_session.parentNode.style.display = 'none';
+            this.resultsSessionEndpoint = false;
+        }
+    }.bind(this));
 }
 
 Runner.prototype = {
@@ -646,6 +715,22 @@ Runner.prototype = {
         }
     },
 
+    config_loaded: function () {
+        if (this.config.test_tool_endpoint)
+        {
+            ajax(this.config.test_tool_endpoint, "GET", "", function (data) {
+                data.links.forEach(function (item)
+                {
+                    var parser = document.createElement('a');
+                    parser.href = this.config.test_tool_endpoint;
+                    parser.pathname = item.href;
+
+                    this.endpoints[item.rel] = parser.href;
+                }.bind(this));
+            }.bind(this));
+        }
+    },
+
     start: function(path, test_types, testharness_settings) {
         this.pause_flag = false;
         this.stop_flag = false;
@@ -655,6 +740,12 @@ Runner.prototype = {
         window.testharness_properties = testharness_settings;
         this.manifest_iterator = new ManifestIterator(this.manifest, this.path, this.test_types);
         this.num_tests = null;
+
+        if(this.resultsSessionEndpoint) {
+            this.serverResults = new ServerResults(this, this.resultsSessionEndpoint);
+        } else {
+            this.serverResults = false;
+        }
 
         if (this.manifest.data === null) {
             this.start_after_manifest_load = true;
@@ -715,7 +806,9 @@ Runner.prototype = {
     on_result: function(status, message, subtests) {
         clearTimeout(this.timeout);
         this.results.set(this.current_test, status, message, subtests);
-        // this.serverResults.set(this.current_test, status, message, subtests);
+        if(this.serverResults) {
+            this.serverResults.set(this.current_test, status, message, subtests);
+        }
         this.result_callbacks.forEach(function (callback) {
             callback(this.current_test, status, message, subtests);
         }.bind(this));
@@ -781,6 +874,25 @@ Runner.prototype = {
             this.num_tests = this.manifest_iterator.count();
         }
         return this.num_tests;
+    },
+
+    create_new_session: function ()
+    {
+        ajax(this.endpoints.results, "POST", "",
+        function (e) // onComplete
+        {
+            if (e.session)
+            {
+                document.getElementById("sessionId").innerText = e.session.id;
+                var parser = document.createElement('a');
+                parser.href = this.endpoints.results;
+                parser.pathname = e.session.href;
+                this.resultsSessionEndpoint = parser.href;
+            }
+        }.bind(this),
+        function () // onError
+        {
+        });
     }
 
 };

@@ -1,14 +1,24 @@
+/// <reference path="testlist.js" />
+/// <reference path="upload.js" />
+/// <reference path="runner.js" />
+/// <reference path="keynav.js" />
+
 /*jshint nonew: false */
 (function () {
 "use strict";
 
 function TestList()
 {
+    this.resultsServerEndpoint = "http://localhost:35127/api.php/results";
+    this.resultsSessionEndpoint = false;
 }
 
 TestList.prototype = {
     build_test_list: function ()
     {
+        var self = this;
+        var test_list = document.getElementById("test_list");
+
         // Build list of the tests
         for (var i = 0; i < tests.length; i++)
         {
@@ -24,7 +34,7 @@ TestList.prototype = {
             var testElement = document.createElement("div");
             testElement.appendChild(testLink);
 
-            testList.appendChild(testLink);
+            test_list.appendChild(testLink);
         }
     },
     install_handler: function (testLink, i)

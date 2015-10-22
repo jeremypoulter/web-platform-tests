@@ -15,53 +15,36 @@ var randName = function () {
 
 
 // Ajax
-var ajax = function (url, func, data) {
-    // Retries
-    var MAX_RETRIES = 4;
-    var retryCount = 0;
+var ajax = function (url, method, data, onComplete, onError)
+{
+    var self = this;
 
     // Get the Ajax object
-    var xhr;
-    try {
-        xhr = new ActiveXObject('Msxml2.XMLHTTP');
-    } catch (e) {
-        try {
-            xhr = new ActiveXObject('Microsoft.XMLHTTP');
-        } catch (e2) {
-            try {
-                xhr = new XMLHttpRequest();
-            } catch (e3) {
-                xhr = false;
-            }
-        }
-    }
+    var xhr = new XMLHttpRequest();
 
     // This function is invoked when the call finishes
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
+    xhr.onreadystatechange = function ()
+    {
+        if (xhr.readyState == 4)
+        {
             // This is a skel of what func needs to do
-            /*
-            if(xhr.status  == 200) {
-                  alert("Received:\n" + xhr.responseText); 
-            } else {
-                  alert("Error code: " + xhr.status);
+            if (xhr.status == 200)
+            {
+                if (onComplete) {
+                    onComplete(JSON.parse(xhr.responseText));
+                }
             }
-            */
-            /*
-            if (! func(xhr)) {
-          if (retryCount < MAX_RETRIES) {
-            // Try again
-            xhr.open("POST", url, true);
-            xhr.send(null);
-            retryCount++;
-          }
+            else
+            {
+                if (onError) {
+                    onError();
+                }
             }
-            */
         }
     }
 
     // The ajax call itself
-    xhr.open("POST", url, true);
+    xhr.open(method, url, true);
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.send(data, data.length);
 }

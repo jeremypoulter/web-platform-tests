@@ -68,9 +68,17 @@
                             <input value="/" id='path' class='path pathText form-control' disabled />
                         </div>
                     </div>
+
+                    <div class="list-group-item row keynav" keynav-selector="#upload_results">
+                        <input type="checkbox" id='upload_results' class='col-sm-1'>
+                        <label for="upload_results" class="control-label col-sm-11">Upload test results</label>
+                    </div>
+                    <div class="list-group-item row keynav" keynav-selector="#new_session" style="display: none">
+                        <button id="new_session" class="btn btn-default"> New session </button> session <span id="sessionId" class=""></span>
+                    </div>
                 </div>
 
-                <div id="testList" class="list-group test-list">
+                <div id="test_list" class="list-group test-list">
                 </div>
             </form>
 
