@@ -182,7 +182,6 @@ VisualOutput.prototype = {
         this.meter.style.width = '0px';
         this.meter.textContent = '0%';
         this.elem.querySelector(".jsonResults").style.display = "none";
-        this.elem.querySelector(".uploadJsonResults").style.display = "none";
         this.results_table.removeChild(this.results_table.tBodies[0]);
         this.results_table.appendChild(document.createElement("tbody"));
     },
@@ -283,22 +282,6 @@ VisualOutput.prototype = {
         a.textContent = "Download JSON results";
         if (!a.getAttribute("download")) a.textContent += " (right-click and save as to download)";
         a.style.display = "inherit";
-
-    // Upload the results (for devices w/o local storage)
-    var file = randName();
-    var d = this.elem.querySelector(".uploadLocation");
-    var u = this.elem.querySelector(".uploadJsonResults");
-    u.href = "";
-    u.style.display = "inherit";
-    u.onclick = function ()
-    {
-        var up = "http://web-platform.test/upload/"
-        ajax(up+"upload.php", "POST",
-             "file="+file+"&log="+encodeURIComponent(json));
-        d.innerHTML = "Your file may be downloaded from:<br>"+
-                      "<a href='"+up+"download.html?id="+file+"'>"+
-                      up+"download.html?id="+file+"</a>";
-        return false;};
     },
 
     test_name_node: function(test) {
