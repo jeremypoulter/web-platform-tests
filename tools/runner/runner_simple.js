@@ -89,6 +89,7 @@ RunnerSimple.prototype =
         this.set_display(".nextButton", "none");
         this.set_display(".test-list", "none");
         this.set_display(".test-runner", "block");
+        this.set_display("#errorMessage", "none");
     },
     on_done: function ()
     {
