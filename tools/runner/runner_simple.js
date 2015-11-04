@@ -75,13 +75,28 @@ RunnerSimple.prototype =
             backButtons[i].addEventListener('click', this.on_back.bind(this));
         }
 
-        // Register a start handler to show the test runner UI
+        // Setup the 'next' button
+        var nextButton = document.querySelector(".nextButton");
+        nextButton.addEventListener('click', this.on_next.bind(this));
+        nextButton.style.display = 'none';
+
+        // Register handlers with the runner
         this.runner.start_callbacks.push(this.on_start.bind(this));
+        this.runner.done_callbacks.push(this.on_done.bind(this));
     },
     on_start: function ()
     {
+        this.set_display(".nextButton", "none");
         this.set_display(".test-list", "none");
         this.set_display(".test-runner", "block");
+    },
+    on_done: function ()
+    {
+        var i = this.get_test_index();
+        if (i >= 0 && i+1 < tests.length)
+        {
+            this.set_display(".nextButton", "block");
+        }
     },
     on_back: function ()
     {
@@ -97,6 +112,14 @@ RunnerSimple.prototype =
         // Select the running test in the list
         this.select_test();
     },
+    on_next: function ()
+    {
+        var i = this.get_test_index();
+        if (i >= 0 && i + 1 < tests.length)
+        {
+            this.testList.start_test(i + 1);
+        }
+    },
     set_display: function (selector, value) 
     {
         var elements = document.querySelectorAll(selector);
@@ -107,6 +130,15 @@ RunnerSimple.prototype =
     },
     select_test: function ()
     {
+        var i = this.get_test_index();
+        if (i >= 0)
+        {
+            var testElement = document.getElementById("test_" + i);
+            this.keyNav.highlightFocusedElement(testElement, true);
+        }
+    },
+    get_test_index: function ()
+    {
         var pathElem = document.getElementById("path");
         var path = pathElem.value.substring(1);
 
@@ -114,10 +146,10 @@ RunnerSimple.prototype =
         {
             if (tests[i] == path)
             {
-                var testElement = document.getElementById("test_" + i);
-                this.keyNav.highlightFocusedElement(testElement, true);
-                return;
+                return i;
             }
         }
+
+        return -1;
     }
 }
