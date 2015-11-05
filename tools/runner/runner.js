@@ -535,66 +535,36 @@ Results.prototype = {
     }
 };
 
-function ServerResults(runner, endpoint)
+function ServerResults(runner)
 {
     this.runner = runner;
-    this.endpoint = endpoint;
+    this.endpoint = false;
 
-    this.runner.start_callbacks.push(this.on_start.bind(this));
+    this.runner.result_callbacks.push(this.on_result.bind(this));
 }
 
-ServerResults.prototype = {
-    on_start: function () {
+ServerResults.prototype =
+{
+    open: function(endpoint) {
+        this.endpoint = endpoint;
     },
-
-    set: function (test, status, message, subtests)
+    close: function (){
+        this.endpoint = false;
+    },
+    on_result: function (test, status, message, subtests)
     {
-        var dataObject = {
-            "test": test,
-            "subtests": subtests,
-            "status": status,
-            "message": message
-        };
-        var data = JSON.stringify(dataObject);
-
-        // Retries
-        var MAX_RETRIES = 4;
-        var retryCount = 0;
-
-        // Get the Ajax object
-        var xhr = new XMLHttpRequest();
-
-        // This function is invoked when the call finishes
-        xhr.onreadystatechange = function ()
+        if (false !== this.endpoint)
         {
-            if (xhr.readyState == 4)
-            {
-                // This is a skel of what func needs to do
-                /*
-                if(xhr.status  == 200) {
-                    alert("Received:\n" + xhr.responseText); 
-                } else {
-                    alert("Error code: " + xhr.status);
-                }
-                */
-                /*
-                if (! func(xhr)) {
-                    if (retryCount < MAX_RETRIES) {
-                        // Try again
-                        xhr.open("POST", url, true);
-                        xhr.send(null);
-                        retryCount++;
-                    }
-                }
-                */
-            }
+            var dataObject = {
+                "test": test,
+                "subtests": subtests,
+                "status": status,
+                "message": message
+            };
+            var data = JSON.stringify(dataObject);
+            ajax(this.endpoint, "POST", data);
         }
-
-        // The ajax call itself
-        xhr.open("POST", this.endpoint, true);
-        xhr.setRequestHeader("Content-type", "application/json");
-        xhr.send(data, data.length);
-    },
+    }
 };
 
 
@@ -643,7 +613,7 @@ function Runner(manifest_path, options)
     this.done_callbacks = [];
 
     this.results = new Results(this);
-    this.serverResults = false;
+    this.serverResults = new ServerResults(this);
 
     this.endpoints = [];
     this.resultsSessionEndpoint = false;
@@ -725,9 +695,9 @@ Runner.prototype = {
         this.num_tests = null;
 
         if(this.resultsSessionEndpoint) {
-            this.serverResults = new ServerResults(this, this.resultsSessionEndpoint);
+            this.serverResults.open(this.resultsSessionEndpoint);
         } else {
-            this.serverResults = false;
+            this.serverResults.close();
         }
 
         if (this.manifest.data === null) {
@@ -780,9 +750,6 @@ Runner.prototype = {
     on_result: function(status, message, subtests) {
         clearTimeout(this.timeout);
         this.results.set(this.current_test, status, message, subtests);
-        if(this.serverResults) {
-            this.serverResults.set(this.current_test, status, message, subtests);
-        }
         this.result_callbacks.forEach(function (callback) {
             callback(this.current_test, status, message, subtests);
         }.bind(this));
