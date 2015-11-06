@@ -9,6 +9,7 @@ function TestList()
 {
     this.resultsServerEndpoint = "http://localhost:35127/api.php/results";
     this.resultsSessionEndpoint = false;
+    this.all = false;
 }
 
 TestList.prototype = {
@@ -16,7 +17,7 @@ TestList.prototype = {
     {
         var test_list = document.getElementById("test_list");
 
-        var testLink = this.create_test_link(i, '', 'All');
+        var testLink = this.create_test_link(-1, '', 'All');
         test_list.appendChild(testLink);
 
         // Build list of the tests
@@ -41,14 +42,20 @@ TestList.prototype = {
     install_handler: function (testLink, i)
     {
         var start_test = this.start_test;
-        testLink.addEventListener('click', function () {
-            start_test(i);
-        });
+        testLink.addEventListener('click', function ()
+        {
+            this.all = false;
+            this.start_test(i);
+        }.bind(this));
     },
     start_test: function (i)
     {
         var path = document.getElementById("path");
         var start_button = document.querySelector(".toggleStart");
+        if (-1 == i) {
+            this.all = true;
+            i = 0;
+        }
         path.value = "/" + tests[i];
         start_button.click();
     }
@@ -96,7 +103,11 @@ RunnerSimple.prototype =
         var i = this.get_test_index();
         if (i >= 0 && i+1 < tests.length)
         {
-            this.set_display(".nextButton", "block");
+            if (this.testList.all) {
+                this.testList.start_test(i + 1);
+            } else {
+                this.set_display(".nextButton", "block");
+            }
         }
     },
     on_back: function ()
