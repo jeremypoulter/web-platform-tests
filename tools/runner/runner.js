@@ -86,7 +86,7 @@ Manifest.prototype = {
 
 function ManifestIterator(manifest, path, test_types) {
     this.manifest = manifest;
-    this.path = path;
+    this.path = path.split(',');
     this.test_types = test_types;
     this.test_types_index = -1;
     this.test_list = null;
@@ -121,8 +121,13 @@ ManifestIterator.prototype = {
         }
     },
 
-    matches: function(manifest_item) {
-        return manifest_item.url.indexOf(this.path) === 0;
+    matches: function (manifest_item)
+    {
+        for(var i in this.path) {
+            if (0 === manifest_item.url.indexOf(this.path[i])) return true;
+        }
+
+        return false;
     },
 
     to_test: function(manifest_item) {
@@ -573,11 +578,15 @@ function TopLevelTestList(inputBox, selectList)
   this.inputBox = inputBox;
   this.selectList = selectList;
   selectList.addEventListener('change', this.on_change.bind(this));
-  for(var i = 0; i < tests.length; i++)
+  var opt = new Option("Custom", "");
+  selectList.add(opt);
+  var opt = new Option("All", "/" + tests.join(",/"));
+  selectList.add(opt);
+  for (var i in tests)
   {
     var test = tests[i];
     
-    var opt = new Option(test, "/"+test);
+    opt = new Option(test, "/"+test);
     selectList.add(opt);
   }
 }
@@ -611,6 +620,7 @@ function Runner(manifest_path, options)
     this.test_pause_callbacks = [];
     this.result_callbacks = [];
     this.done_callbacks = [];
+    this.error_callbacks = [];
 
     this.results = new Results(this);
     this.serverResults = new ServerResults(this);
@@ -708,30 +718,28 @@ Runner.prototype = {
     },
 
     do_start: function() {
-        if (this.manifest_iterator.count() > 0) {
+        if (this.manifest_iterator.count() > 0)
+        {
             this.open_test_window();
             this.start_callbacks.forEach(function(callback) {
                 callback();
             });
             this.run_next_test();
-        } else {
+        }
+        else
+        {
             var tests = "tests";
             if (this.test_types.length < 3) {
                 tests = this.test_types.join(" tests or ") + " tests";
             }
-            var message = "No " + tests + " found in this path."
+            var message = "No " + tests + " found in '"+this.path+"'.";
 
-            var errorMessage = document.getElementById("errorMessage");
-            var errorMessageText = document.getElementById("errorMessageText");
-            if (null != errorMessage && null != errorMessageText)
+            document.querySelector(".path").setCustomValidity(message);
+
+            this.error_callbacks.forEach(function (callback)
             {
-                errorMessage.style.display = 'block';
-                errorMessageText.innerText = message;
-            }
-            else
-            {
-                document.querySelector(".path").setCustomValidity(message);
-            }
+                callback(message);
+            });
         }
     },
 
@@ -878,8 +886,7 @@ function setup() {
     new ManualUI(document.getElementById("manualUI"), runner);
     new VisualOutput(document.getElementById("output"), runner);
     new TopLevelTestList(document.getElementById("path"), document.getElementById("pathSelector"));
-    if (RunnerSimple)
-    {
+    if (window.RunnerSimple) {
         new RunnerSimple(runner);
     }
 

@@ -9,7 +9,6 @@ function TestList()
 {
     this.resultsServerEndpoint = "http://localhost:35127/api.php/results";
     this.resultsSessionEndpoint = false;
-    this.all = false;
 }
 
 TestList.prototype = {
@@ -44,19 +43,15 @@ TestList.prototype = {
         var start_test = this.start_test;
         testLink.addEventListener('click', function ()
         {
-            this.all = false;
             this.start_test(i);
         }.bind(this));
     },
     start_test: function (i)
     {
         var path = document.getElementById("path");
+        path.value = (-1 == i) ? "/" + tests.join(",/") : "/" + tests[i];
+
         var start_button = document.querySelector(".toggleStart");
-        if (-1 == i) {
-            this.all = true;
-            i = 0;
-        }
-        path.value = "/" + tests[i];
         start_button.click();
     }
 };
@@ -90,6 +85,7 @@ RunnerSimple.prototype =
         // Register handlers with the runner
         this.runner.start_callbacks.push(this.on_start.bind(this));
         this.runner.done_callbacks.push(this.on_done.bind(this));
+        this.runner.error_callbacks.push(this.on_error.bind(this));
     },
     on_start: function ()
     {
@@ -103,11 +99,7 @@ RunnerSimple.prototype =
         var i = this.get_test_index();
         if (i >= 0 && i+1 < tests.length)
         {
-            if (this.testList.all) {
-                this.testList.start_test(i + 1);
-            } else {
-                this.set_display(".nextButton", "block");
-            }
+            this.set_display(".nextButton", "block");
         }
     },
     on_back: function ()
@@ -130,6 +122,16 @@ RunnerSimple.prototype =
         if (i >= 0 && i + 1 < tests.length)
         {
             this.testList.start_test(i + 1);
+        }
+    },
+    on_error: function (message)
+    {
+        var errorMessage = document.getElementById("errorMessage");
+        var errorMessageText = document.getElementById("errorMessageText");
+        if (null != errorMessage && null != errorMessageText)
+        {
+            errorMessage.style.display = 'block';
+            errorMessageText.innerText = message;
         }
     },
     set_display: function (selector, value) 
