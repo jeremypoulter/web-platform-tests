@@ -832,7 +832,7 @@ Runner.prototype = {
         {
             if (e.session)
             {
-                document.getElementById("sessionId").innerText = e.session.id;
+                document.getElementById("sessionId").innerHTML = e.session.id;
                 var parser = document.createElement('a');
                 parser.href = this.endpoints.results;
                 parser.pathname = e.session.href;
