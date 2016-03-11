@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TC 4.4-1 VideoTrack</title>
+    <link rel="author" title="CableLabs" href="html5@cablelabs.com">
+    <meta name="flags" content="[requirement flags]">
+    <meta name="assert" content="ISOBMFF - UA creates VideoTrack, attributes set.">
+    <meta name="timeout" content="long">
+    <script src="testmedia.js"></script>
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <!-- Script Version: BETA -->
+    <!-- About the Media Resource
+
+         To verify DOM elements the details of the test media must be known prior to test execution.
+         This test script is bound to the test media file sourced in the script.
+         Sourcing a different test media file or modifying that file may invalidate the test.
+
+         The test media is an ISOBMFF with 2 audio (aac), 2 video (h264), and 2 text (webvtt) streams.
+    -->
+  </head>
+  <body>
+    <p>
+      <a href="http://www.w3.org/TR/html5/references.html#refsINBANDTRACKS">Spec
+      Reference [INBANDTRACKS]</a>
+    </p>
+    <video id="v" width="400" height="300" autoplay controls></video>
+    <div id="log"></div>
+    <script>
+      var test = async_test("ISOBMFF VideoTracks attributes.");
+      var video = document.getElementById("v");
+      video.src = mediaServerURL() + "multistream.mp4"; 
+
+      var expectedTracks = [
+        {
+          id: "1",
+          kind: "main",
+          language: "so",
+          label: "SMPTE Test Pattern"
+        }, {
+          id: "2",
+          kind: "",
+          language: "zh",
+          label: "Bouncing Ball"
+        }
+      ];
+
+      video.addEventListener("playing", function() {
+        video.pause();
+
+        test.step(function() {
+          assert_equals(video.videoTracks.length, expectedTracks.length, "VideoTrackList.length");
+          for (var i = 0; i < expectedTracks.length; ++i) {
+            var expected = expectedTracks[i];
+            var actual = video.videoTracks[i];
+            for (var key in expected) {
+              assert_equals(actual[key], expected[key], "VideoTrack[" + i + "]." + key);
+            }
+          }
+        });
+        test.done();
+      }, false);
+    </script>
+  </body>
+</html>

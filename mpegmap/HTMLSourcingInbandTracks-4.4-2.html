@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+  <head>
+    <title>TC 4.4-2 AudioTracks</title>
+    <link rel="author" title="CableLabs" href="html5@cablelabs.com">
+    <meta name="flags" content="[requirement flags]">
+    <meta name="assert" content="ISOBMFF - UA creates AudioTracks, attributes set.">
+    <meta name="timeout" content="long">
+    <script src="testmedia.js"></script>
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <!-- Script Version: BETA -->
+    <!-- About the Media Resource
+
+         To verify DOM elements the details of the test media must be known prior to test execution.
+         This test script is bound to the test media file sourced in the script.
+         Sourcing a different test media file, or modifying that file, may invalidate the test.
+
+         The media is an ISOBMFF containing two video streams and two audio streams.
+    -->
+  </head>
+  <body>
+    <p>
+      <a href="http://www.w3.org/TR/html5/references.html#refsINBANDTRACKS">Spec
+      Reference [INBANDTRACKS]</a>
+    </p>
+
+    <audio id="a" width="400" height="300" autoplay controls></audio>
+    <div id="log"></div>
+
+    <script>
+      var test = async_test("ISOBMFF AudioTracks attributes.");
+      var audio = document.getElementById("a");
+      audio.src = mediaServerURL() + "multistream.mp4"; 
+
+      var expectedTracks = [
+        {
+          id: "3",
+          kind: "main",
+          language: "en",
+          label: "High Beeps"
+        }, {
+          id: "4",
+          kind: "",
+          language: "de",
+          label: "Low Beeps"
+        }
+      ];
+
+      audio.addEventListener("playing", function() {
+        audio.pause();
+
+        test.step(function() {
+          assert_equals(audio.audioTracks.length, expectedTracks.length, "AudioTrackList.length");
+          for (var i = 0; i < expectedTracks.length; ++i) {
+            var expected = expectedTracks[i];
+            var actual = audio.audioTracks[i];
+            for (var key in expected) {
+              assert_equals(actual[key], expected[key], "AudioTrack[" + i + "]." + key);
+            }
+          }
+        });
+        test.done();
+      }, false);
+    </script>
+  </body>
+</html>
