@@ -1,29 +1,26 @@
 <!doctype html>
 <html>
   <head>
-    <title>TC 5.1.4-4 EISS TextTrack</title>
+    <title>TC 5.2-1 Closed Caption TextTrack</title>
     <link rel="author" title="CableLabs" href="html5@cablelabs.com">
     <meta name="flags" content="[requirement flags]">
-    <meta name="assert" content="MPEG-2 SPTS, EISS - UA creates TextTrack, attributes set.">
+    <meta name="assert" content="MPEG-2 SPTS, Closed Caption - UA creates TextTrack, attributes set.">
     <meta name="timeout" content="long">
     <script src="testmedia.js"></script>
-    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. -->
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-
     <!-- Script Version: BETA -->
-
     <!-- About the Media Resource
-           To verify DOM elements the details of the test media must be known prior to test execution.
-           This test script is bound to the test media file sourced in the script.
-           Sourcing a differnt test media file, or modifying that file, may invalidate the test.
 
-           The media is an MPEG-2, Single Program Transport Stream
-           containing two EISS streams and one program insertion cue stream.
+         To verify DOM elements the details of the test media must be known prior to test execution.
+         This test script is bound to the test media file sourced in the script.
+         Sourcing a differnt test media file, or modifying that file, may invalidate the test.
+
+         The media is an MPEG-2, Single Program Transport Stream
+         containing both 608 and 708 Closed Caption.
     -->
   </head>
-
-
   <body>
     <p>
       <a href="http://www.w3.org/TR/html5/references.html#refsINBANDTRACKS">Spec
@@ -33,67 +30,37 @@
     <video id="v" width="400" height="300" autoplay controls></video>
     <div id="log"></div>
 
-
     <script>
-      var test = async_test("EISS TextTrack attributes.");
+      var test = async_test("Closed Caption TextTrack attributes.");
       var vid = document.getElementById("v");
-      vid.src = mediaServerURL() + "UserPrivateStreams.ts";
+      vid.src = mediaServerURL() + "ClosedCaption.ts";
 
-      var indexEiss = -1;
-      var indexEbif = -1;
-      var eissPid = '1768';  // EISS1 PID
-      var ebifPid = '1770';  // EISS2 PID
-      var kind = 'metadata';
-      var language = '';
-      var mode = 'disabled';
+      var serviceNumber = '1';  // service number in service block
+      var id = 'sn1';  // caption service number in Caption Service Descriptor
+      var kind = 'captions';
+      var language = 'en';
 
-
+      vid.textTracks.addEventListener("addtrack", function(event) {
+        var track = event.track;
+        track.mode = "hidden";
+        if (track.id === id) {
+          test.step(function() {
+            assert_equals(track.kind, kind, "TextTrack.kind");
+            assert_equals(track.language, language, "TextTrack.language");
+          });
+          test.done();
+        }
+      });
       vid.addEventListener("playing", function() {
-        setTimeout(function() {
-
-          vid.pause();
-
-          for (i=0; i< vid.textTracks.length; i++) {
-            if (vid.textTracks[i].id == eissPid) {
-              indexEiss = i;
-            }
-            if (vid.textTracks[i].id == ebifPid) {
-              indexEbif = i;
-            }
-          }
-
-          if (eissPid == -1) {
-            test.step(function() {
-              assert_unreached("Did not find first EISS TextTrack.id (PID) " + eissPid + " in DOM.");
-            }, "Did not find first EISS TextTrack.id (PID) " + eissPid + " in DOM.");
-            test.done();
-          }
-          else if (ebifPid == -1) {
-            test.step(function() {
-              assert_unreached("Did not find second EISS TextTrack.id (PID) " + ebifPid + " in DOM.");
-            }, "Did not find second EISS TextTrack.id (PID) " + ebifPid + " in DOM.");
-            test.done();
-
-          } else {
-            test.step(function() {
-              // EISS
-              assert_equals(vid.textTracks[indexEiss].id, eissPid, "TextTrackList1.id EISS1");
-              assert_equals(vid.textTracks[indexEiss].kind, kind, "TextTrack1.kind");
-              assert_equals(vid.textTracks[indexEiss].language, language, "TextTrack1.language");
-              assert_equals(vid.textTracks[indexEiss].mode, mode, "TextTrack1.mode");
-
-              // EBIF
-              assert_equals(vid.textTracks[indexEbif].id, ebifPid, "TextTrackList2.id EISS2");
-              assert_equals(vid.textTracks[indexEbif].kind, kind, "TextTrack2.kind");
-              assert_equals(vid.textTracks[indexEbif].language, language, "TextTrack2.language");
-              assert_equals(vid.textTracks[indexEbif].mode, mode, "TextTrack2.mode");
-            });
-
-            test.done();
-          }
-        }, 12000);
-      }, false);
-
+        vid.pause();
+        if (!vid.textTracks.getTrackById(id)) {
+          test.step(function() {
+            assert_unreached("Did not find Closed Caption Track with id " +
+                             id + " in DOM.");
+          });
+          test.done();
+        }
+      });
     </script>
   </body>
 </html>

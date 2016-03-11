@@ -10,22 +10,19 @@
     <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
-
     <!-- Script Version: BETA -->
-
     <!-- About the Media Resource
-           To verify DOM elements the details of the test media must be known prior to test execution.
-           This test script is bound to the test media file sourced in the script.
-           Sourcing a differnt test media file, or modifying that file, may invalidate the test.
 
-           The test media is an MPEG-2, Single Program Transport Stream
-           containing two EISS streams, and one program insertion cue stream.
-           In test media file the PMT 'ES apperance order'
-           is the same as the assending order of ES PIDs.
+         To verify DOM elements the details of the test media must be known prior to test execution.
+         This test script is bound to the test media file sourced in the script.
+         Sourcing a differnt test media file, or modifying that file, may invalidate the test.
+
+         The test media is an MPEG-2, Single Program Transport Stream
+         containing two EISS streams, and one program insertion cue stream.
+         In test media file the PMT 'ES apperance order'
+         is the same as the assending order of ES PIDs.
     -->
   </head>
-
-
   <body>
     <p>
       <a href="http://www.w3.org/TR/html5/references.html#refsINBANDTRACKS">Spec
@@ -34,37 +31,30 @@
 
     <video id="v" width="400" height="300" autoplay controls></video>
     <div id="log"></div>
-
-
     <script>
       var test = async_test("TextTrackList order.");
       var vid = document.getElementById("v");
       vid.src = mediaServerURL() + "UserPrivateStreams.ts";
 
-      // In test media file the PMT 'ES apperance order'
-      // is the same as the assending order of ES PIDs.
-      var pids = ['1770', '1768', '45'];                // SCTE-35, EISS, EBIF PIDS
+      // PMT ES appearance order
+      var pids = ["sn1", "1768", "1770"];
  
       vid.addEventListener("playing", function() {
-        setTimeout(function() {
+        vid.pause();
 
-          vid.pause();
-
-          test.step(function() {
-	    // Make sure the three required tracks are in order
-	    var next = 0;
-	    for (i = 0; i < vid.textTracks.length; i++) {
-              if (pids.indexOf(vid.textTracks[i].id) >= 0) {
-		assert_equals(pids[next], vid.textTracks[i].id, "TextTrackList Order");
-		next++;
-	      }
+        test.step(function() {
+          // Make sure the tracks are in order
+          var next = 0;
+          for (var i = 0; i < vid.textTracks.length; i++) {
+            if (pids.indexOf(vid.textTracks[i].id) !== -1) {
+              assert_equals(vid.textTracks[i].id, pids[next], "TextTrackList Order");
+              next++;
             }
-          }, "TextTrackListOrder.");
+          }
+        }, "TextTrackListOrder.");
 
-          test.done();
-        }, 15000);
+        test.done();
       }, false);
-
     </script>
   </body>
 </html>
