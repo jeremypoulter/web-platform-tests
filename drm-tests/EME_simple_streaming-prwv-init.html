@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html ng-app="DashPlayer" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>EME - Simple Streaming of a Specific Title</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
+
+    <meta name="timeout" content="long">
+
+    <link rel="stylesheet" href="dashjs/samples/dash-if-reference-player/app/lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="dashjs/samples/dash-if-reference-player/app/lib/bootstrap/css/bootstrap-glyphicons.css">
+    <link rel="stylesheet" href="dashjs/samples/dash-if-reference-player/app/css/main.css">
+    <link rel="stylesheet" href="dashjs/samples/dash-if-reference-player/app/css/eme.css">
+    <link rel="stylesheet" href="dashjs/contrib/akamai/controlbar/contolbar.css">
+
+    <!-- http://jquery.com/ -->
+    <script src="dashjs/samples/dash-if-reference-player/app/lib/jquery/jquery-1.10.2.min.js"></script>
+
+    <!-- http://angularjs.org/ -->
+    <script src="dashjs/samples/dash-if-reference-player/app/lib/angular/angular.min.js"></script>
+    <script src="dashjs/samples/dash-if-reference-player/app/lib/angular/angular-resource.min.js"></script>
+
+    <!-- http://getbootstrap.com/ -->
+    <script src="dashjs/samples/dash-if-reference-player/app/lib/bootstrap/js/bootstrap.min.js"></script>
+
+    <script src="dashjs/dist/dash.debug.js"></script>
+
+    <!-- App -->
+    <script src="dashjs/contrib/akamai/controlbar/ControlBar.js"></script>
+    <script src="app/test-eme-main.js"></script>
+
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C)
+    Test Harness. -->
+    <script src="../resources/testharness.js"></script>
+    <script src="../resources/testharnessreport.js"></script>
+
+     <!-- Test functions -->
+    <script src="app/test-streams.js"></script>
+    <script src="app/test-machine.js"></script>
+
+    <!-- The test code -->
+    <script>
+
+window.onload = function () 
+{ 
+  // TODO: Update the selectStream function with your streams
+  var url = selectStream(window.location.pathname, "big-title");
+
+  var sequence = [
+      TestMachine.START,
+
+      // Set the session type
+      TestMachine.SET_TEMPORARY_SESSION,
+
+      // Start the player
+      TestMachine.GET_STREAMS,
+      TestMachine.SET_STREAM,
+      TestMachine.GET_LICENSE,
+      TestMachine.WAIT_FOR_LICENSE,
+      TestMachine.START_PLAY_LICENSE,
+
+      // Run the tests
+      TestMachine.CHECK_KEYSTATUS,
+      TestMachine.CHECK_SESSION_TYPE,
+      TestMachine.CHECK_PLAYING,
+      TestMachine.CHECK_DURATION,
+
+      TestMachine.SEEK_TIME,
+
+      TestMachine.CHECK_ENDED,
+      TestMachine.CHECK_END_TIME,
+      TestMachine.CHECK_NEEDKEY_GREATER,
+      TestMachine.END
+  ];
+
+  var testParameters = {
+      "videoUrl": url,
+      "keysNeededGreater": 0, // TODO: Set the minimum number of need key events 
+      "sessionType": "temporary", // TODO: Set the expected session type
+      "seekStart": 2.0, // TODO: Set the start time for the seek
+      "seekEnd": 31.002666, // TODO: Set the end time for the seek
+      "duration": 33.002666, // TODO: Set the expected duration for the test stream
+      "durationRange": 0.5, // TODO: Set the tollerance for the reported duration
+      "endTime": 33.002666, // TODO: Set the expected end time for the test stream
+      "endRange": 0.5 // TODO: Set the tollerance for the reported end time
+  }
+
+  // TODO: Set the 2nd parameter to the number of seconds before timing out the tests
+  var testMachine = new TestMachine(sequence, 35.0, testParameters);
+  testMachine.runTests();
+};
+
+    </script>
+   
+</head>
+<body ng-controller="DashController">
+    <div class="modal fade" id="streamModal">
+        <div class="modal-dialog">
+            <div class="list-group modal-list">
+                <a
+                   ng-repeat="item in availableStreams"
+                   href="#"
+                   class="list-group-item"
+                   ng-click="setStream(item)"
+                   data-dismiss="modal">
+                    {{item.name}}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="row title-header">
+            <a href="http://dashif.org/" target="_blank"><img class="image" src="dashjs/samples/dash-if-reference-player/app/img/if.png"/></a>
+            <span id="big-title">EME Test: Simple Streaming of a Specific Title</span>
+        </div>
+
+        <div class="row">
+            <div class="input-group">
+                <div id="desktop-streams" class="input-group-btn">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        Stream <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li
+                            ng-repeat="item in availableStreams"
+                            ng-click="setStream(item)">
+                            <a>{{item.name}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div id="mobile-streams" class="input-group-btn">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" href="#streamModal">
+                        Stream <span class="caret"></span>
+                    </button>
+                </div>
+                <input type="text" class="form-control" placeholder="manifest" ng-model="selectedItem.url">
+                <span class="input-group-btn">
+                    <button class="btn btn-primary" type="button" ng-click="doLoad()">Play</button>
+                    <button class="btn btn-primary" type="button" ng-click="doLicenseFetch()">Fetch Licenses</button>
+                </span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="dash-video-player col-md-9">
+                <div id="videoContainer">
+                    <video id="vid" controls="true" muted></video>
+                    <div id="videoController" class="video-controller unselectable">
+                        <div id="playPauseBtn" class="btn-play-pause" title="Play/Pause">
+                            <span id="iconPlayPause" class="icon-play"></span>
+                        </div>
+                        <span id="videoTime" class="time-display">00:00:00</span>
+    
+                        <div id="fullscreenBtn" class="btn-fullscreen" title="Fullscreen">
+                            <span class="icon-fullscreen-enter"></span>
+                        </div>
+                        <input type="range" id="volumebar" class="volumebar" value="1" min="0" max="1" step=".01" />
+    
+                        <div id="muteBtn" class="btn-mute" title="Mute">
+                            <span id="iconMute" class="icon-mute-off"></span>
+                        </div>
+                        <div id="captionBtn" class="btn-caption" title="Closed Caption">
+                            <span class="icon-caption"></span>
+                        </div>
+    
+                        <span id="videoDuration" class="duration-display">00:00:00</span>
+    
+                        <div class="seekContainer">
+                            <input type="range" id="seekbar" value="0" class="seekbar" min="0" step="0.01"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="shrink panel panel-default">
+                    <div class="panel-heading panel-top">
+                        <h1 class="panel-title">New Session Properties</h1>
+                    </div>
+                    <div class="panel-body">
+                        <h5>Session Type</h5>
+                        <div id="session-type" class="btn-group-vertical" data-toggle="buttons">
+                            <label class="btn btn-default active">
+                                <input type="radio" id="temporary" autocomplete="off" checked>temporary
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" id="persistent-license" autocomplete="off">persistent-license
+                            </label>
+                            <label class="btn btn-default">
+                                <input type="radio" id="persistent-release-message" autocomplete="off">persistent-release
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Protection Information</h3>
+            </div>
+        </div>
+
+
+        <div class="row" ng-repeat="d in drmData">
+            <div class="panel panel-info" ng-class="{sessionPanelPlaying: d.isPlaying}">
+                <div class="panel-heading panel-top">
+                    <span class="panel-title">{{d.manifest.url}}</span>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default" ng-disabled="!d.licenseReceived" ng-click="play(d)">Play</button>
+                        <button type="button" class="btn btn-default" ng-click="delete(d)">Delete</button>
+                    </div>
+                </div>
+                <div class="col-sm-12" ng-show="d.ksconfig">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h4 ng-show="d.protCtrl.protectionModel.keySystem" class="keysystem shrink">Key System: <span class="label label-success">{{d.protCtrl.protectionModel.keySystem.systemString}}</span></h4>
+                            <div><b>Init Data Types: </b>{{arrayToCommaSeparated(d.ksconfig.initDataTypes)}}</div>
+                            <div><b>Persistent State: </b><span ng-show="d.ksconfig.persistentState">{{d.ksconfig.persistentState}}</span></div>
+                            <div><b>Distinctive Identifier: </b><span ng-show="d.ksconfig.distinctiveIdentifier">{{d.ksconfig.distinctiveIdentifier}}</span></div>
+                        </div>
+                        <div class="col-sm-4">
+                            <h5>Video Configs</h5>
+                            <ul class="list-group">
+                                <li class="list-group-item" ng-repeat="video in d.ksconfig.videoCapabilities">
+                                    <div><b>ContentType: </b>{{video.contentType}}</div>
+                                    <div><b>Robustness: </b>{{video.robustness}}</div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-sm-4">
+                            <h5>Audio Configs</h5>
+                            <ul class="list-group">
+                                <li class="list-group-item" ng-repeat="audio in d.ksconfig.audioCapabilities">
+                                    <div><b>ContentType: </b>{{audio.contentType}}</div>
+                                    <div><b>Robustness: </b>{{audio.robustness}}</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="errormessage" ng-show="d.error"><span class="label label-danger">ERROR</span><span class="errormessage">{{d.error}}</span></div>
+                <div class="panel panel-default sessionPanel" ng-repeat="s in d.sessions">
+                    <div class="panel-heading panel-top">
+                        <span class="panel-title">SessionID: {{s.sessionToken.getSessionID()}}</span>
+                        <div class="btn-group">
+                            <button type="button" ng-disabled="isLoaded(s)" class="btn btn-default" ng-click="d.protCtrl.loadKeySession(s.sessionID)">Load</button>
+                            <button type="button" ng-disabled="!isLoaded(s)" class="btn btn-default" ng-click="d.protCtrl.removeKeySession(s.sessionToken)">Remove</button>
+                            <button type="button" class="btn btn-default" ng-click="d.protCtrl.closeKeySession(s.sessionToken)">Close</button>
+                        </div>
+                    </div>
+                    <div class="keymessage" ng-show="s.lastMessage">{{s.lastMessage}}</div>
+                    <div class="keymessage"><b>Session Persistence: </b><span>{{getLoadedMessage(s)}}</span></div>
+                    <h5 ng-show="s.getExpirationTime()">Expiration: {{s.getExpirationTime()}}</h5>
+                    <table ng-show="isLoaded(s) && s.keystatus && s.keystatus.length > 0" class="table table-bordered table-hover">
+                        <tr>
+                            <th>Key ID</th>
+                            <th class="centered">Key Status</th>
+                        </tr>
+                        <tr ng-repeat="keystatus in s.keystatus">
+                            <td class="keyid">{{keystatus.key}}</td>
+                            <td ng-class="{true: 'success'}[keystatus.status=='usable']" class="centered">{{keystatus.status}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
