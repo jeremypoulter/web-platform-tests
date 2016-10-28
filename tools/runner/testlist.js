@@ -27,5 +27,6 @@ var tests = [
   "workers",
   "XMLHttpRequest",
   "mpegmap",
-  "signature"
+  "signature",
+  "drm-tests"
 ];
