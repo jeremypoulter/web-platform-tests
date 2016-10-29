@@ -662,9 +662,14 @@ Runner.prototype = {
 
             var iFrameElement = document.createElement("iframe");
             iFrameElement.id = 'outputWindow';
-            iFrameElement.style.width = placeHolder.clientWidth + "px";
-            iFrameElement.style.height = (window.innerHeight * 0.6) + "px";
-            
+
+            if(placeHolder.classList.contains('embed-responsive')) {
+                iFrameElement.classList.add('embed-responsive-item');
+            } else {
+                iFrameElement.style.width = placeHolder.clientWidth + "px";
+                iFrameElement.style.height = (window.innerHeight * 0.6) + "px";
+            }
+
             placeHolder.appendChild(iFrameElement);
             this.test_window = iFrameElement.contentWindow;
         } else {
