@@ -36,6 +36,7 @@ var TestMachine = function ()
         this.sequence = toObj(sequence);
         this.state = TestMachine.START;
         vid = document.getElementById("vid");
+        this.fetchingDrmCredentials = false;
 
         for (i = 0; i < sequence.length; i++) {
 
@@ -163,18 +164,66 @@ var TestMachine = function ()
             break;
 
         case TestMachine.GET_STREAMS:
-            if (testing.availableStreams) {
-                for (i = 0; i < testing.availableStreams.length; i++) {
-                    if (testing.availableStreams[i].url == this.videoUrl) {
-                        this.stream = testing.availableStreams[i];
-                        this.state = this.sequence[this.state];
-                    }
-                }
+            if(false === this.fetchingDrmCredentials)
+            {
+                this.fetchingDrmCredentials = true;
+                this.endpoints = [];
+                $.get("/config.json", function(config) 
+                {
+                    $.get(config.test_tool_endpoint, function(api) 
+                    {
+                        api.links.forEach(function (item)
+                        {
+                            var parser = document.createElement('a');
+                            parser.href = config.test_tool_endpoint;
+                            parser.pathname = item.href;
+
+                            this.endpoints[item.rel] = parser.href;
+                        }.bind(this));
+
+                        $.get(this.endpoints.drm, function(drm) 
+                        {
+                            var sessionId = btoa(JSON.stringify(
+                                {
+                                    "sessionID": drm.sessionId
+                                }
+                            ));
+                            var drmTodayData = btoa(JSON.stringify(
+                                {
+                                    "userId": drm.userId,
+                                    "sessionId": sessionId,
+                                    "merchant": "global_dnla"
+                                }
+                            ));
+                            var protData = {
+                                "com.widevine.alpha":{
+                                    "drmtoday":true,
+                                    "serverURL":"https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/",
+                                    "httpRequestHeaders":{ "dt-custom-data":drmTodayData }
+                                },
+                                "com.microsoft.playready":{
+                                    "drmtoday":true,
+                                    "serverURL":"https://lic.staging.drmtoday.com/license-proxy-headerauth/drmtoday/RightsManager.asmx",
+                                    "httpRequestHeaders":{
+                                        "http-header-CustomData":drmTodayData
+                                    }
+                                }
+                            };
+                            this.stream = {
+                                name: "",
+                                url: this.videoUrl,
+                                protData: protData
+                            }
+
+                            this.state = this.sequence[this.state];
+                        }.bind(this), "json");
+                    }.bind(this), "json");
+                }.bind(this), "json");
             }
             break;
 
         case TestMachine.SET_STREAM:
-             testing.setStream(this.stream);
+            testing.setStream(this.stream);
             this.state = this.sequence[this.state];
             break;
 

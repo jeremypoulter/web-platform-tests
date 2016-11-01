@@ -3,100 +3,32 @@
         {
             "name":"O-DASH_AVC_MP4_SD-DRM-01: CEnc PlayReady",
             "url":"/drm-tests/content/O-DASH_AVC_MP4_SD-DRM-01/O-DASH_AVC_MP4_SD-DRM-01.mpd",
-            "browsers":"",
-            "protData":{
-                "com.microsoft.playready":{
-                    "drmtoday":true,
-                    "serverURL":"https://lic.staging.drmtoday.com/license-proxy-headerauth/drmtoday/RightsManager.asmx",
-                    "httpRequestHeaders":{
-                        "http-header-CustomData":"eyJ1c2VySWQiOiJ0ZXN0dXNlciIsInNlc3Npb25JZCI6ImV5SmhkWFJvSWpvaU1USXpJaXdpYjNabGNtbGtaU0k2ZXlKd2NtOW1hV3hsSWpwN0luSmxiblJoYkNJNmV5SmhZbk52YkhWMFpVVjRjR2x5WVhScGIyNGlPaUl5TURFMExUQTNMVEU0VkRFeU9qRTFPakkwV2lJc0luQnNZWGxFZFhKaGRHbHZiaUk2TXpZd01EQXdmWDE5ZlE9PSIsIm1lcmNoYW50IjoiZ2xvYmFsX2RubGEifQ=="
-                    }
-                }
-            }
+            "browsers":""
         },
         {
             "name":"O-DASH_AVC_MP4_SD-DRM-02: CEnc WideVine",
             "url":"/drm-tests/content/O-DASH_AVC_MP4_SD-DRM-02/O-DASH_AVC_MP4_SD-DRM-02.mpd",
-            "browsers":"",
-            "protData":{
-                "com.widevine.alpha":{
-                    "drmtoday":true,
-                    "serverURL":"https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/",
-                    "httpRequestHeaders":{
-                        "dt-custom-data":"eyJ1c2VySWQiOiJ0ZXN0dXNlciIsInNlc3Npb25JZCI6ImV5SmhkWFJvSWpvaU1USXpJaXdpYjNabGNtbGtaU0k2ZXlKd2NtOW1hV3hsSWpwN0luSmxiblJoYkNJNmV5SmhZbk52YkhWMFpVVjRjR2x5WVhScGIyNGlPaUl5TURFMExUQTNMVEU0VkRFeU9qRTFPakkwV2lJc0luQnNZWGxFZFhKaGRHbHZiaUk2TXpZd01EQXdmWDE5ZlE9PSIsIm1lcmNoYW50IjoiZ2xvYmFsX2RubGEifQ=="
-                    }
-                }
-            }
+            "browsers":""
         },
         {
             "name":"O-DASH_AVC_MP4_SD-DRM-03: CEnc PlayReady/WideVine",
             "url":"/drm-tests/content/O-DASH_AVC_MP4_SD-DRM-03/O-DASH_AVC_MP4_SD-DRM-03.mpd",
-            "browsers":"",
-            "protData":{
-                "com.widevine.alpha":{
-                    "drmtoday":true,
-                    "serverURL":"https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/",
-                    "httpRequestHeaders":{
-                        "dt-custom-data":"eyJ1c2VySWQiOiJ0ZXN0dXNlciIsInNlc3Npb25JZCI6ImV5SmhkWFJvSWpvaU1USXpJaXdpYjNabGNtbGtaU0k2ZXlKd2NtOW1hV3hsSWpwN0luSmxiblJoYkNJNmV5SmhZbk52YkhWMFpVVjRjR2x5WVhScGIyNGlPaUl5TURFMExUQTNMVEU0VkRFeU9qRTFPakkwV2lJc0luQnNZWGxFZFhKaGRHbHZiaUk2TXpZd01EQXdmWDE5ZlE9PSIsIm1lcmNoYW50IjoiZ2xvYmFsX2RubGEifQ=="
-                    }
-                },
-                "com.microsoft.playready":{
-                    "drmtoday":true,
-                    "serverURL":"https://lic.staging.drmtoday.com/license-proxy-headerauth/drmtoday/RightsManager.asmx",
-                    "httpRequestHeaders":{
-                        "http-header-CustomData":"eyJ1c2VySWQiOiJ0ZXN0dXNlciIsInNlc3Npb25JZCI6ImV5SmhkWFJvSWpvaU1USXpJaXdpYjNabGNtbGtaU0k2ZXlKd2NtOW1hV3hsSWpwN0luSmxiblJoYkNJNmV5SmhZbk52YkhWMFpVVjRjR2x5WVhScGIyNGlPaUl5TURFMExUQTNMVEU0VkRFeU9qRTFPakkwV2lJc0luQnNZWGxFZFhKaGRHbHZiaUk2TXpZd01EQXdmWDE5ZlE9PSIsIm1lcmNoYW50IjoiZ2xvYmFsX2RubGEifQ=="
-                    }
-                }
-            }
+            "browsers":""
         },
         {
             "name":"O-DASH_AVC_MP4_SD-DRM-04: CEnc PlayReady, Initial data",
             "url":"/drm-tests/content/O-DASH_AVC_MP4_SD-DRM-04/O-DASH_AVC_MP4_SD-DRM-04.mpd",
-            "browsers":"",
-            "protData":{
-                "com.microsoft.playready":{
-                    "drmtoday":true,
-                    "serverURL":"https://lic.staging.drmtoday.com/license-proxy-headerauth/drmtoday/RightsManager.asmx",
-                    "httpRequestHeaders":{
-                        "http-header-CustomData":"eyJ1c2VySWQiOiJ0ZXN0dXNlciIsInNlc3Npb25JZCI6ImV5SmhkWFJvSWpvaU1USXpJaXdpYjNabGNtbGtaU0k2ZXlKd2NtOW1hV3hsSWpwN0luSmxiblJoYkNJNmV5SmhZbk52YkhWMFpVVjRjR2x5WVhScGIyNGlPaUl5TURFMExUQTNMVEU0VkRFeU9qRTFPakkwV2lJc0luQnNZWGxFZFhKaGRHbHZiaUk2TXpZd01EQXdmWDE5ZlE9PSIsIm1lcmNoYW50IjoiZ2xvYmFsX2RubGEifQ=="
-                    }
-                }
-            }
+            "browsers":""
         },
         {
             "name":"O-DASH_AVC_MP4_SD-DRM-05: CEnc WideVine, Initial data",
             "url":"/drm-tests/content/O-DASH_AVC_MP4_SD-DRM-05/O-DASH_AVC_MP4_SD-DRM-05.mpd",
-            "browsers":"",
-            "protData":{
-                "com.widevine.alpha":{
-                    "drmtoday":true,
-                    "serverURL":"https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/",
-                    "httpRequestHeaders":{
-                        "dt-custom-data":"eyJ1c2VySWQiOiJ0ZXN0dXNlciIsInNlc3Npb25JZCI6ImV5SmhkWFJvSWpvaU1USXpJaXdpYjNabGNtbGtaU0k2ZXlKd2NtOW1hV3hsSWpwN0luSmxiblJoYkNJNmV5SmhZbk52YkhWMFpVVjRjR2x5WVhScGIyNGlPaUl5TURFMExUQTNMVEU0VkRFeU9qRTFPakkwV2lJc0luQnNZWGxFZFhKaGRHbHZiaUk2TXpZd01EQXdmWDE5ZlE9PSIsIm1lcmNoYW50IjoiZ2xvYmFsX2RubGEifQ=="
-                    }
-                }
-            }
+            "browsers":""
         },
         {
             "name":"O-DASH_AVC_MP4_SD-DRM-06: CEnc PlayReady/WideVine Initial data",
             "url":"/drm-tests/content/O-DASH_AVC_MP4_SD-DRM-06/O-DASH_AVC_MP4_SD-DRM-06.mpd",
-            "browsers":"",
-            "protData":{
-                "com.widevine.alpha":{
-                    "drmtoday":true,
-                    "serverURL":"https://lic.staging.drmtoday.com/license-proxy-widevine/cenc/",
-                    "httpRequestHeaders":{
-                        "dt-custom-data":"eyJ1c2VySWQiOiJ0ZXN0dXNlciIsInNlc3Npb25JZCI6ImV5SmhkWFJvSWpvaU1USXpJaXdpYjNabGNtbGtaU0k2ZXlKd2NtOW1hV3hsSWpwN0luSmxiblJoYkNJNmV5SmhZbk52YkhWMFpVVjRjR2x5WVhScGIyNGlPaUl5TURFMExUQTNMVEU0VkRFeU9qRTFPakkwV2lJc0luQnNZWGxFZFhKaGRHbHZiaUk2TXpZd01EQXdmWDE5ZlE9PSIsIm1lcmNoYW50IjoiZ2xvYmFsX2RubGEifQ=="
-                    }
-                },
-                "com.microsoft.playready":{
-                    "drmtoday":true,
-                    "serverURL":"https://lic.staging.drmtoday.com/license-proxy-headerauth/drmtoday/RightsManager.asmx",
-                    "httpRequestHeaders":{
-                        "http-header-CustomData":"eyJ1c2VySWQiOiJ0ZXN0dXNlciIsInNlc3Npb25JZCI6ImV5SmhkWFJvSWpvaU1USXpJaXdpYjNabGNtbGtaU0k2ZXlKd2NtOW1hV3hsSWpwN0luSmxiblJoYkNJNmV5SmhZbk52YkhWMFpVVjRjR2x5WVhScGIyNGlPaUl5TURFMExUQTNMVEU0VkRFeU9qRTFPakkwV2lJc0luQnNZWGxFZFhKaGRHbHZiaUk2TXpZd01EQXdmWDE5ZlE9PSIsIm1lcmNoYW50IjoiZ2xvYmFsX2RubGEifQ=="
-                    }
-                }
-            }
+            "browsers":""
         }
     ]
 }
