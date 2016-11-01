@@ -284,7 +284,16 @@ app.controller('DashController', function($scope, Sources, Notes, Contributors, 
                     return retVal;
                 };
                 session.keystatus = [];
-                e.data.getKeyStatuses().forEach(function(status, key){
+                var keyStatuses = e.data.getKeyStatuses();
+                keyStatuses.forEach(function(status, key)
+                {
+                    // Chrome and IE/Edge differ in the order these arguments are passed so 
+                    // swap if the key is not found
+                    if("string" !== typeof(status)) {
+                        var temp = status;
+                        status = key;
+                        key = temp;
+                    }
                     session.keystatus.push({
                         key: toGUID(new Uint8Array(key)),
                         status: status
