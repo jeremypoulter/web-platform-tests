@@ -597,6 +597,71 @@ TopLevelTestList.prototype = {
     }
 };
 
+
+    /*
+     * Hugely simplified version of WAMP, just enough to connect and subscribe to the required topic.
+     * 
+     * Will probably only work with PHP Ratcher (http://socketo.me/) and probably full of security holes.
+     * 
+     * +--------------+----+------------------+
+     * | Message Type | ID | DIRECTION        |
+     * |--------------+----+------------------+
+     * | WELCOME      | 0  | Server-to-Client |
+     * | PREFIX       | 1  | Bi-Directional   |
+     * | CALL         | 2  | Client-to-Server |
+     * | CALL RESULT  | 3  | Server-to-Client |
+     * | CALL ERROR   | 4  | Server-to-Client |
+     * | SUBSCRIBE    | 5  | Client-to-Server |
+     * | UNSUBSCRIBE  | 6  | Client-to-Server |
+     * | PUBLISH      | 7  | Client-to-Server |
+     * | EVENT        | 8  | Server-to-Client |
+     * +--------------+----+------------------+
+     */
+
+function SimpleWamp(server, onConnect)
+{
+    this.WELCOME = 0;
+    this.PREFIX = 1;
+    this.CALL = 2;
+    this.CALL_RESULT = 3;
+    this.CALL_ERROR = 4;
+    this.SUBSCRIBE = 5;
+    this.UNSUBSCRIBE = 6;
+    this.PUBLISH = 7;
+    this.EVENT = 8;
+
+    this.topics = [];
+
+    this.serverSocket = new WebSocket(server);
+    this.serverSocket.onmessage = function (event)
+    {
+        var msg = JSON.parse(event.data);
+        switch (msg[0])
+        {
+            case this.WELCOME:
+                onConnect();
+                break;
+            case this.EVENT:
+                this.topics[msg[1]](msg[2]);
+                break;
+        }
+    }.bind(this);
+}
+
+SimpleWamp.prototype = 
+{
+    subscribe: function (topic, onEvent) 
+    {
+        this.serverSocket.send(JSON.stringify([this.SUBSCRIBE, topic]));
+        this.topics[topic] = onEvent;
+    },
+    unsubscribe: function (topic) 
+    {
+        this.serverSocket.send(JSON.stringify([this.UNSUBSCRIBE, topic]));
+        this.topics[topic] = null;
+    }
+}
+
 function Runner(manifest_path, options)
 {
     this.server = location.protocol + "//" + location.host;
@@ -632,6 +697,9 @@ function Runner(manifest_path, options)
     this.manifest.load(this.manifest_loaded.bind(this));
     this.config.load(this.config_loaded.bind(this));
 
+    this.topic = 'test.html5_test_suite.dlna.org/';
+    this.serverEvent = null;
+
     var new_session = document.getElementById("new_session");
     new_session.addEventListener('click', function () {
         this.create_new_session();
@@ -645,6 +713,7 @@ function Runner(manifest_path, options)
         } else {
             new_session.parentNode.style.display = 'none';
             this.resultsSessionEndpoint = false;
+            this.remote_disconnect();
         }
     }.bind(this));
 }
@@ -832,7 +901,10 @@ Runner.prototype = {
         {
             if (e.session)
             {
+                this.remote_unsubscribe();
                 document.getElementById("sessionId").innerHTML = e.session.id;
+                this.remote_subscribe();
+
                 var parser = document.createElement('a');
                 parser.href = this.endpoints.results;
                 parser.pathname = e.session.href;
@@ -841,9 +913,45 @@ Runner.prototype = {
         }.bind(this),
         function () // onError
         {
-        });
-    }
+        }.bind(this));
+    },
 
+    remote_connect: function ()
+    {
+        if (null != this.serverEvent) {
+            this.remote_disconnect();
+        }
+
+        var parser = document.createElement('a');
+        parser.href = this.config.test_tool_endpoint;
+        this.serverEvent = new SimpleWamp('ws://' + parser.hostname + ':9001', function () {
+            this.remote_subscribe();
+        }.bind(this));
+    },
+
+    remote_disconnect: function ()
+    {
+        this.remote_unsubscribe();
+        this.serverEvent = null;
+    },
+
+    remote_subscribe: function ()
+    {
+        if (null != this.serverEvent) {
+            this.serverEvent.subscribe(this.topic + document.getElementById("sessionId").innerHTML, function (event) {
+                console.log(event);
+            }.bind(this));
+        } else {
+            this.remote_connect();
+        }
+    },
+
+    remote_unsubscribe: function ()
+    {
+        if (null != this.serverEvent) {
+            this.serverEvent.unsubscribe(this.topic + document.getElementById("sessionId").innerHTML);
+        }
+    }
 };
 
 
