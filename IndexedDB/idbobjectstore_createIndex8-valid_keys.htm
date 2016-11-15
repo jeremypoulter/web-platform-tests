@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>IDBObjectStore.createIndex() - index can be valid keys</title>
+<link rel="author" href="mailto:odinho@opera.com" title="Odin Hørthe Omdal">
 <meta name=timeout content=long>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -37,7 +38,7 @@
         });
         idx.get(ar).onsuccess = t.step_func(function(e) {
             assert_equals(e.target.result.key, 'array', 'key');
-            assert_object_equals(e.target.result.i, ar, 'array is the same');
+            assert_array_equals(e.target.result.i, ar, 'array is the same');
         });
         idx.get(num).onsuccess = t.step_func(function(e) {
             assert_equals(e.target.result.key, 'number', 'key');

@@ -13,7 +13,7 @@ booleans.forEach(function(bubbles) {
       e.initEvent("type", bubbles, cancelable)
 
       // Step 3.
-      // Can't test the stop propagation flag and stop immediate propagation flag.
+      // Stop (immediate) propagation flag is tested later
       assert_equals(e.defaultPrevented, false, "defaultPrevented")
       // Step 4.
       assert_equals(e.isTrusted, false, "isTrusted")
@@ -78,28 +78,41 @@ async_test(function() {
   this.done()
 }, "Calling initEvent must not have an effect during dispatching.")
 
+test(function() {
+  var e = document.createEvent("Event")
+  e.stopPropagation()
+  e.initEvent("type", false, false)
+  var target = document.createElement("div")
+  var called = false
+  target.addEventListener("type", function() { called = true }, false)
+  assert_true(target.dispatchEvent(e), "dispatchEvent must return true")
+  assert_true(called, "Listener must be called")
+}, "Calling initEvent must unset the stop propagation flag.")
+
+test(function() {
+  var e = document.createEvent("Event")
+  e.stopImmediatePropagation()
+  e.initEvent("type", false, false)
+  var target = document.createElement("div")
+  var called = false
+  target.addEventListener("type", function() { called = true }, false)
+  assert_true(target.dispatchEvent(e), "dispatchEvent must return true")
+  assert_true(called, "Listener must be called")
+}, "Calling initEvent must unset the stop immediate propagation flag.")
+
 async_test(function() {
   var e = document.createEvent("Event")
   e.initEvent("type", false, false)
-  e.stopPropagation()
 
   var target = document.createElement("div")
   target.addEventListener("type", this.step_func(function() {
-    assert_unreached("")
+    e.initEvent("type2", true, true);
+    assert_equals(e.type, "type", "initEvent type setter should short-circuit");
+    assert_false(e.bubbles, "initEvent bubbles setter should short-circuit");
+    assert_false(e.cancelable, "initEvent cancelable setter should short-circuit");
   }), false)
   assert_equals(target.dispatchEvent(e), true, "dispatchEvent must return true")
-  assert_equals(target.dispatchEvent(e), true, "dispatchEvent must return true")
-
-  e.initEvent("type", false, false)
-  var called = false
-  var target = document.createElement("div")
-  target.addEventListener("type", this.step_func(function() {
-    called = true
-  }), false)
-  assert_false(called)
-  assert_equals(target.dispatchEvent(e), true, "dispatchEvent must return true")
-  assert_true(called)
 
   this.done()
-}, "Calling initEvent must unset the stop propagation flag.")
+}, "Calling initEvent during propagation.")
 </script>

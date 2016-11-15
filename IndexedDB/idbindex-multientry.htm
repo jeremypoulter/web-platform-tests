@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>IDBIndex.multiEntry - adding keys</title>
+<link rel="author" href="mailto:odinho@opera.com" title="Odin Hørthe Omdal">
 <link rel=help href="http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#key-construct">
 <link rel=assert title="XXX">
 <script src="/resources/testharness.js"></script>
@@ -43,7 +44,7 @@
         idx.getKey('Bobby').onsuccess = this.step_func(function(e) {
             gotten_keys.push(e.target.result)
 
-            assert_object_equals(gotten_keys, expected_keys);
+            assert_array_equals(gotten_keys, expected_keys);
             this.done();
         });
     }

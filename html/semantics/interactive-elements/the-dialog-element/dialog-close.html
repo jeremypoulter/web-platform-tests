@@ -2,7 +2,7 @@
 <meta charset=utf-8>
 <title>dialog element: close()</title>
 <link rel="author" title="Denis Ah-Kang" href="mailto:denis@w3.org">
-<link rel=help href="http://www.w3.org/html/wg/drafts/html/master/#the-dialog-element">
+<link rel=help href="https://html.spec.whatwg.org/multipage/#the-dialog-element">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="log"></div>
@@ -36,10 +36,9 @@
       was_queued = false;
 
   test(function(){
-    assert_throws("INVALID_STATE_ERR", function() {
-      d1.close();
-    });
-  }, "close() on a <dialog> that doesn't have an open attribute throws an InvalidStateError exception");
+    d1.close("closedialog");
+    assert_equals(d1.returnValue, "");
+  }, "close() on a <dialog> that doesn't have an open attribute aborts the steps");
 
   test(function(){
     assert_true(d2.open);

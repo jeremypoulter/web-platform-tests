@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
 <title>Attempt to create new transactions inside a versionchange transaction</title>
+<link rel="author" href="mailto:odinho@opera.com" title="Odin Hørthe Omdal">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=support.js></script>
@@ -49,18 +50,18 @@
             .addEventListener("success", log("complete2_get.success"))
 
         txn.oncomplete = this.step_func(function(e) {
-            assert_object_equals(events, [
-                                   "versionchange_add.success: 1",
-                                   "versionchange_count.success: 0",
-                                   "versionchange_add2.success: 2",
-                                   "versionchange_txn.complete",
+            assert_array_equals(events, [
+                                  "versionchange_add.success: 1",
+                                  "versionchange_count.success: 0",
+                                  "versionchange_add2.success: 2",
+                                  "versionchange_txn.complete",
 
-                                   "open_rq.success: [object IDBDatabase]",
+                                  "open_rq.success: [object IDBDatabase]",
 
-                                   "complete_count.success: 2",
-                                   "complete2_get.success: 1",
-                                 ],
-                        "events")
+                                  "complete_count.success: 2",
+                                  "complete2_get.success: 1",
+                                ],
+                       "events")
             this.done()
         })
     }

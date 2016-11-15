@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title> IDBCursor.advance() - object store - iterate cursor number of times specified by count </title>
+<link rel="author" title="Microsoft" href="http://www.microsoft.com">
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=support.js></script>
@@ -15,7 +16,7 @@
 
     var open_rq = createdb(t);
     open_rq.onupgradeneeded = function(e) {
-        db = event.target.result;
+        db = e.target.result;
         var store = db.createObjectStore("test", {keyPath:"pKey"});
 
         for(var i = 0; i < records.length; i++) {
