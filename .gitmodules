@@ -4,5 +4,5 @@
 	ignore = dirty
 [submodule "tools"]
 	path = tools
-	url = https://github.com/w3c/wpt-tools.git
+	url = git@github.com:jeremypoulter/wpt-tools.git
 	ignore = dirty
