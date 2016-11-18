@@ -140,3 +140,6 @@ W3C-TEST.ORG:check_stability.py
 # Git submodules are not currently scanned
 *:tools/*
 *:resources/*
+
+# Do not check 3rd party (minified) libraries included by the DRM tests
+*:drm-tests/app/lib/*
