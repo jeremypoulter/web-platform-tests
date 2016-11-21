@@ -67,6 +67,7 @@ TRAILING WHITESPACE: encoding/legacy*/*
 *:*.eot
 *:*.sfd
 *:*.swf
+*:*.ts
 
 ## Documentation ##
 
