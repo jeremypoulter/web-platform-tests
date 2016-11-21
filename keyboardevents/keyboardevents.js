@@ -1,5 +1,5 @@
 
-var testKeyKeydownKeyup = function (keyName) 
+var testKeyKeydownKeyup = function (keyName)
 {
   //var keyAttribute = "keyIdentifier";
   var keyAttribute = "key";
@@ -29,12 +29,12 @@ var testKeyKeydownKeyup = function (keyName)
     var QUIET_INTERVAL = 2000;
     var elapsedTime = 0;
     var keyPressed = false;
-    
-    // Used to check for any keyboard activity 
+
+    // Used to check for any keyboard activity
     var quietListener = function () {
       keyPressed = true;
     };
-    
+
     var startListener = function ()
     {
       window.addEventListener("keydown", quietListener, false);
@@ -45,9 +45,9 @@ var testKeyKeydownKeyup = function (keyName)
       window.clearTimeout(initTimer);
       window.removeEventListener("keydown", quietListener);
     };
-    
+
     startListener();
-    
+
     var initTimer = setInterval(
       function ()
       {
@@ -55,11 +55,11 @@ var testKeyKeydownKeyup = function (keyName)
         if (keyPressed) {
           elapsedTime += QUIET_INTERVAL;
           keyPressed = false;
-      
+
           if (elapsedTime >= INIT_TIMEOUT) {
             // The test could not initialize
             stopListener();
-        
+
             test.step(function() {
               assert_unreached("Unable to initialize test. "+
                                "Initialization requires "+QUIET_INTERVAL+"ms without "+
@@ -90,11 +90,11 @@ var testKeyKeydownKeyup = function (keyName)
     var keyCount = 0;
     var keyPressed = false;
     var elapsedTime = 0;
-    
-    // Checks keydown events 
+
+    // Checks keydown events
     var keyDownListener = function (keyEvent) {
       switch (keyState) {
-    
+
       case KEY_INIT: // The expected value
         keyState = KEY_DOWN_RECEIVED;
         writeMessage("testlog",
@@ -115,7 +115,7 @@ var testKeyKeydownKeyup = function (keyName)
         test.done();
         break;
 
-      case KEY_DOWN_RECEIVED: 
+      case KEY_DOWN_RECEIVED:
         appendMessage("testlog",
                       "<br><b>ERROR keyDownListener:</b> "+
                       "Received unexpected keydown event");
@@ -138,10 +138,10 @@ var testKeyKeydownKeyup = function (keyName)
       return false;
     };
 
-    // Checks keyup events 
+    // Checks keyup events
     var keyUpListener = function () {
       switch (keyState) {
-    
+
       case KEY_INIT:
         writeMessage("testlog",
                      "<b>ERROR keyUpListener</b> "+
@@ -151,7 +151,7 @@ var testKeyKeydownKeyup = function (keyName)
         });
         test.done();
         break;
-    
+
       case KEY_DOWN_RECEIVED: // The expected value
         appendMessage("testlog",
                       "<br>Received expected keyup event");
@@ -217,7 +217,7 @@ var testKeyKeydownKeyup = function (keyName)
         if (!keyPressed) {
           return;
         }
-    
+
         // Check if the key has been pressed for a while
         keyPressCount++;
         if (keyPressCount > 1) {
@@ -225,7 +225,7 @@ var testKeyKeydownKeyup = function (keyName)
           return;
         }
       },
-      KEY_INTERVAL);  
+      KEY_INTERVAL);
   };
 
 
