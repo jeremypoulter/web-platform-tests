@@ -129,67 +129,67 @@ chart {
 }
 
 #manifestInfo {
-	height: auto;
-	overflow: auto;
-	white-space: nowrap;
-	position: relative;
+    height: auto;
+    overflow: auto;
+    white-space: nowrap;
+    position: relative;
 }
 
 #manifestInfo > div {
-	overflow: auto;
+    overflow: auto;
 }
 
 .manifest-info-box {
-	display: inline-block;
-	width: 300px;
-	vertical-align: top;
+    display: inline-block;
+    width: 300px;
+    vertical-align: top;
 }
 
 .manifest-info-item:first-child {
-	width: 600px;
+    width: 600px;
 }
 
 .manifest-info-item:first-child span {
-	padding-left: 300px;
+    padding-left: 300px;
 }
 
 .manifest-info-content {
-	display: inline-block;
-	width: 100%;
+    display: inline-block;
+    width: 100%;
 }
 
 .manifest-info-content:nth-of-type(even) {
-	background-color: #e1edf7;
+    background-color: #e1edf7;
 }
 
 .manifest-nested-info {
 }
 
 .manifest-info-content[header]:before {
-	content: attr(header);
-	position: absolute;
-	width: 250px;
-	color: #428BCA;
-	background-color: white;
-	left: 0;
+    content: attr(header);
+    position: absolute;
+    width: 250px;
+    color: #428BCA;
+    background-color: white;
+    left: 0;
 }
 
 .manifest-info-content.manifest-nested-info[header]:before {
-	padding-left: 20px;
+    padding-left: 20px;
 }
 
 .manifest-info-content[header]:nth-of-type(even):before {
-	background-color: #e1edf7;
+    background-color: #e1edf7;
 }
 
 .manifest-info-content[header="Period"],
 .manifest-info-content[header="Period"]:before {
-	background-color: #e0ffff;
+    background-color: #e0ffff;
 }
 
 .manifest-info-content[header="Representation"],
 .manifest-info-content[header="Representation"]:before {
-	background-color: #f5fffa;
+    background-color: #f5fffa;
 }
 
 .btn-caption,
