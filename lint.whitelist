@@ -68,6 +68,10 @@ TRAILING WHITESPACE: encoding/legacy*/*
 *:*.sfd
 *:*.swf
 *:*.ts
+*:*.m2v
+*:*.mp2
+
+*:Web.config
 
 ## Documentation ##
 
