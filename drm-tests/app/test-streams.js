@@ -1,5 +1,5 @@
 /*
-  This function selects the test stream based on the URL. 
+  This function selects the test stream based on the URL.
 
   The test harness requires different test files for each test, and this
   allows a single multiple tests to be generated from a single file.

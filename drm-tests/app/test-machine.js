@@ -1,4 +1,4 @@
-var TestMachine = function () 
+var TestMachine = function ()
 {
     var i = 0,
     endLoops = 0,
@@ -12,9 +12,9 @@ var TestMachine = function ()
       timeout: Number of seconds to wait before giving up on the tests
       testParameters: Array of values needed by various test machine states
      */
-    var TestMachine = function (sequence, timeout, testParameters) 
+    var TestMachine = function (sequence, timeout, testParameters)
     {
-        var 
+        var
         i = 0,
         vid,
         sleep = 100,
@@ -143,7 +143,7 @@ var TestMachine = function ()
         console.info("TestMachine state: "+this.state);
 
         switch (this.state) {
-        
+
         case TestMachine.START:
             this.state = this.sequence[this.state];
             break;
@@ -168,9 +168,9 @@ var TestMachine = function ()
             {
                 this.fetchingDrmCredentials = true;
                 this.endpoints = [];
-                $.get("/config.json", function(config) 
+                $.get("/config.json", function(config)
                 {
-                    $.get(config.test_tool_endpoint, function(api) 
+                    $.get(config.test_tool_endpoint, function(api)
                     {
                         api.links.forEach(function (item)
                         {
@@ -181,7 +181,7 @@ var TestMachine = function ()
                             this.endpoints[item.rel] = parser.href;
                         }.bind(this));
 
-                        $.get(this.endpoints.drm, function(drm) 
+                        $.get(this.endpoints.drm, function(drm)
                         {
                             var sessionId = btoa(JSON.stringify(
                                 {
@@ -435,7 +435,7 @@ var TestMachine = function ()
         } else if (newType == "persistent-license") {
             off("temporary");
             off("persistent-release-message");
-            on("persistent-license");       
+            on("persistent-license");
         } else if (newType == "persistent-release-message") {
             off("temporary");
             off("persistent-license");

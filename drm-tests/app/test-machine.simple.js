@@ -1,4 +1,4 @@
-var TestMachine = function () 
+var TestMachine = function ()
 {
     var i = 0,
     endLoops = 0,
@@ -12,9 +12,9 @@ var TestMachine = function ()
       timeout: Number of seconds to wait before giving up on the tests
       testParameters: Array of values needed by various test machine states
      */
-    var TestMachine = function (sequence, timeout, testParameters, vid) 
+    var TestMachine = function (sequence, timeout, testParameters, vid)
     {
-        var 
+        var
         i = 0,
         vid,
         sleep = 100,
@@ -141,7 +141,7 @@ var TestMachine = function ()
         console.info("TestMachine state: "+this.state);
 
         switch (this.state) {
-        
+
         case TestMachine.START:
             this.state = this.sequence[this.state];
             break;
@@ -396,9 +396,9 @@ var TestMachine = function ()
         setTimeout(this.runTests.bind(this), sleep);
     }
 
-    var manifestLoaded = function (manifest/*, error*/) 
+    var manifestLoaded = function (manifest/*, error*/)
     {
-        if (manifest) 
+        if (manifest)
         {
             var found = false;
             for (var i = 0; i < $scope.drmData.length; i++) {
@@ -407,7 +407,7 @@ var TestMachine = function ()
                     break;
                 }
             }
-            if (!found) 
+            if (!found)
             {
                 var protCtrl = player.createProtection();
                 if ($scope.selectedItem.hasOwnProperty("protData")) {
@@ -426,7 +426,7 @@ var TestMachine = function ()
     };
 
 
-    var addDRMData = function(manifest, protCtrl) 
+    var addDRMData = function(manifest, protCtrl)
     {
         // Assign the session type to be used for this controller
         protCtrl.setSessionType($("#session-type").find(".active").children().attr("id"));
@@ -447,7 +447,7 @@ var TestMachine = function ()
         $scope.drmData.push(data);
         $scope.safeApply();
 
-        protCtrl.addEventListener(MediaPlayer.dependencies.ProtectionController.events.KEY_SYSTEM_SELECTED, function(e) 
+        protCtrl.addEventListener(MediaPlayer.dependencies.ProtectionController.events.KEY_SYSTEM_SELECTED, function(e)
         {
             if (!e.error) {
                 data.ksconfig = e.data.ksConfiguration;
@@ -459,7 +459,7 @@ var TestMachine = function ()
             }
             $scope.safeApply();
         });
-        protCtrl.addEventListener(MediaPlayer.dependencies.ProtectionController.events.KEY_SESSION_CREATED, function(e) 
+        protCtrl.addEventListener(MediaPlayer.dependencies.ProtectionController.events.KEY_SESSION_CREATED, function(e)
         {
             if (!e.error) {
                 var persistedSession = findSession(e.data.getSessionID());
@@ -485,7 +485,7 @@ var TestMachine = function ()
             }
             $scope.safeApply();
         });
-        protCtrl.addEventListener(MediaPlayer.dependencies.ProtectionController.events.KEY_SESSION_REMOVED, function(e) 
+        protCtrl.addEventListener(MediaPlayer.dependencies.ProtectionController.events.KEY_SESSION_REMOVED, function(e)
         {
             if (!e.error) {
                 var session = findSession(e.data);
@@ -498,7 +498,7 @@ var TestMachine = function ()
             }
             $scope.safeApply();
         });
-        protCtrl.addEventListener(MediaPlayer.dependencies.ProtectionController.events.KEY_SESSION_CLOSED, function(e) 
+        protCtrl.addEventListener(MediaPlayer.dependencies.ProtectionController.events.KEY_SESSION_CLOSED, function(e)
         {
             if (!e.error) {
                 for (var i = 0; i < data.sessions.length; i++) {
@@ -545,7 +545,7 @@ var TestMachine = function ()
                 $scope.safeApply();
             }
         });
-        protCtrl.addEventListener(MediaPlayer.dependencies.ProtectionController.events.KEY_MESSAGE, function(e) 
+        protCtrl.addEventListener(MediaPlayer.dependencies.ProtectionController.events.KEY_MESSAGE, function(e)
         {
             var session = findSession(e.data.sessionToken.getSessionID());
             if (session) {
@@ -609,7 +609,7 @@ var TestMachine = function ()
         } else if (newType == "persistent-license") {
             off("temporary");
             off("persistent-release-message");
-            on("persistent-license");       
+            on("persistent-license");
         } else if (newType == "persistent-release-message") {
             off("temporary");
             off("persistent-license");

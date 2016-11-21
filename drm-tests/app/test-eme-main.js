@@ -97,7 +97,7 @@ app.controller('DashController', function($scope, Sources, Notes, Contributors, 
     controlbar.disable() //controlbar.hide() // other option
 
     // (ew)
-    testing.player = player;  
+    testing.player = player;
 
     function getUrlVars() {
         var vars = {};
@@ -140,7 +140,7 @@ app.controller('DashController', function($scope, Sources, Notes, Contributors, 
     // (ew)
     testing.setStream = function (item) {
         $scope.setStream(item);
-        $scope.safeApply();     
+        $scope.safeApply();
     }
 
     $scope.doLoad = function () {
@@ -287,7 +287,7 @@ app.controller('DashController', function($scope, Sources, Notes, Contributors, 
                 var keyStatuses = e.data.getKeyStatuses();
                 keyStatuses.forEach(function(status, key)
                 {
-                    // Chrome and IE/Edge differ in the order these arguments are passed so 
+                    // Chrome and IE/Edge differ in the order these arguments are passed so
                     // swap if the key is not found
                     if("string" !== typeof(status)) {
                         var temp = status;
@@ -456,7 +456,7 @@ app.controller('DashController', function($scope, Sources, Notes, Contributors, 
 
     if (paramUrl !== null) {
         var startPlayback = true;
-    
+
         $scope.selectedItem = {};
         $scope.selectedItem.url = paramUrl;
 
