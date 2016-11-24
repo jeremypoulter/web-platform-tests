@@ -7,7 +7,7 @@
     <meta name="assert" content="MPEG-DASH - UA creates AudioTracks, attributes set.">
     <meta name="timeout" content="long">
     <script src="testmedia.js"></script>
-    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. --> 
+    <!-- Source HTTP server local copy of World Wide Web Consortium (W3C) Test Harness. -->
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <!-- Script Version: BETA -->
@@ -33,7 +33,7 @@
     <script>
       var test = async_test("MPEG-DASH AudioTracks attributes.");
       var audio = document.getElementById("a");
-      audio.src = mediaServerURL() + "multistream.mpd"; 
+      audio.src = mediaServerURL() + "multistream.mpd";
 
       var expectedTracks = [
         {

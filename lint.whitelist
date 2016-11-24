@@ -68,6 +68,8 @@ TRAILING WHITESPACE: encoding/legacy*/*
 *:*.sfd
 *:*.swf
 *:*.ts
+*:*.m2v
+*:*.mp2
 
 ## Documentation ##
 
@@ -144,3 +146,6 @@ W3C-TEST.ORG:check_stability.py
 
 # Do not check 3rd party (minified) libraries included by the DRM tests
 *:drm-tests/app/lib/*
+
+# Visual Studio files
+CR AT EOL:Web.config

@@ -140,8 +140,6 @@ var TestMachine = function ()
     {
         var i;
 
-        console.info("TestMachine state: "+this.state);
-
         switch (this.state) {
 
         case TestMachine.START:

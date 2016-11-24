@@ -35,7 +35,7 @@ var selectStream = function (path, id)
         return "/drm-tests/content/O-DASH_AVC_MP4_SD-DRM-06/O-DASH_AVC_MP4_SD-DRM-06.mpd";
     }
 
-    console.warn("WARNING: Test has no encryption type encoded.");
+    assert_true(false, "Test has no encryption type encoded.");
 
     setLabel("PlayReady/WideVine");
     return "/drm-tests/content/O-DASH_AVC_MP4_SD-DRM-02/O-DASH_AVC_MP4_SD-DRM-03.mpd";
