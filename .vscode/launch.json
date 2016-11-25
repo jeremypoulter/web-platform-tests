@@ -35,6 +35,22 @@
                 "RedirectOutput"
             ],
             "env": {"name":"value"}
+        },
+        {
+            "name": "check_stability.py",
+            "type": "python",
+            "pythonPath":"${config.python.pythonPath}",
+            "request": "launch",
+            "stopOnEntry": true,
+            "console": "None",
+            "program": "${file}",
+            "cwd": "${workspaceRoot}",
+            "debugOptions": [
+                "WaitOnAbnormalExit",
+                "WaitOnNormalExit",
+                "RedirectOutput"
+            ],
+            "args": [ "--root", "D:\\Users\\Jeremy\\Documents\\Dev\\JeremyPoulter", "chrome"]
         }
 
     ]
