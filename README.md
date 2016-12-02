@@ -92,6 +92,10 @@ web-platform-tests root to `config.json`. Then edit the JSON so that
 the key `ssl/openssl/base_conf_path` has a value that is the path to
 the OpenSSL config file.
 
+Alternatively, you may also use
+[Bash on Ubuntu on Windows](https://msdn.microsoft.com/en-us/commandline/wsl/about)
+in the Windows 10 Anniversary Update build, then access your windows
+partition from there to launch wptserve.
 
 Test Runner
 ===========
@@ -227,6 +231,15 @@ We can sometimes take a little while to go through pull requests
 because we have to go through all the tests and ensure that they match
 the specification correctly. But we look at all of them, and take
 everything that we can.
+
+OWNERS files are used only to indicate who should be notified of pull
+requests.  If you are interested in receiving notifications of proposed
+changes to tests in a given directory, feel free to add yourself to the
+OWNERS file. Anyone with expertise in the specification under test can
+approve a pull request.  In particular, if a test change has already
+been adequately reviewed "upstream" in another repository, it can be
+pushed here without any further review by supplying a link to the
+upstream review.
 
 Getting Involved
 ================
