@@ -18,6 +18,7 @@ var nukedInterfaces = [
   "DOMLocator",
   "DOMObject",
   "DOMSettableTokenList",
+  "DOMStringList",
   "DOMUserData",
   "Entity",
   "EntityReference",
@@ -70,6 +71,18 @@ var elementNuked = [
   "setIdAttributeNode"
 ]
 elementNuked.forEach(isNukedFromElement)
+
+function isNukedFromAttr(name) {
+  test(function() {
+    var attr = document.createAttribute("test")
+    assert_equals(attr[name], undefined)
+  }, "Attr member must be nuked: " + name)
+}
+var attrNuked = [
+  "schemaTypeInfo",
+  "isId"
+]
+attrNuked.forEach(isNukedFromAttr)
 
 function isNukedFromDoctype(name) {
   test(function() {
