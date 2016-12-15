@@ -42,7 +42,7 @@
             "pythonPath":"${config.python.pythonPath}",
             "request": "launch",
             "stopOnEntry": true,
-            "console": "None",
+            "console": "none",
             "program": "${file}",
             "cwd": "${workspaceRoot}",
             "debugOptions": [
@@ -50,8 +50,7 @@
                 "WaitOnNormalExit",
                 "RedirectOutput"
             ],
-            "args": [ "--root", "D:\\Users\\Jeremy\\Documents\\Dev\\JeremyPoulter", "chrome"]
+            "args": [ "--root", "D:\\Users\\Jeremy\\Documents\\Dev\\JeremyPoulter", "chrome", "--remote-repo", "origin"]
         }
-
     ]
 }
