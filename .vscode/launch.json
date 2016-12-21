@@ -43,7 +43,7 @@
             "request": "launch",
             "stopOnEntry": true,
             "console": "none",
-            "program": "${file}",
+            "program": "${workspaceRoot}/check_stability.py",
             "cwd": "${workspaceRoot}",
             "debugOptions": [
                 "WaitOnAbnormalExit",
@@ -51,6 +51,22 @@
                 "RedirectOutput"
             ],
             "args": [ "--root", "D:\\Users\\Jeremy\\Documents\\Dev\\JeremyPoulter", "chrome", "--remote-repo", "origin"]
+        },
+        {
+            "name": "serve.py",
+            "type": "python",
+            "pythonPath":"${config.python.pythonPath}",
+            "request": "launch",
+            "stopOnEntry": true,
+            "console": "none",
+            "program": "${workspaceRoot}/serve",
+            "cwd": "${workspaceRoot}",
+            "debugOptions": [
+                "WaitOnAbnormalExit",
+                "WaitOnNormalExit",
+                "RedirectOutput"
+            ],
+            "args": [ ]
         }
     ]
 }
