@@ -13,6 +13,8 @@ import traceback
 import zipfile
 from cStringIO import StringIO
 from collections import defaultdict
+from ConfigParser import RawConfigParser
+from io import BytesIO
 from urlparse import urljoin
 from tools.manifest import manifest
 
@@ -89,14 +91,14 @@ class TravisFold(object):
 
 
 class GitHub(object):
-    def __init__(self, org, repo, token, browser):
+    def __init__(self, org, repo, token, product):
         self.token = token
         self.headers = {"Accept": "application/vnd.github.v3+json"}
         self.auth = (self.token, "x-oauth-basic")
         self.org = org
         self.repo = repo
         self.base_url = "https://api.github.com/repos/%s/%s/" % (org, repo)
-        self.browser = browser
+        self.product = product
 
     def _headers(self, headers):
         if headers is None:
@@ -145,7 +147,7 @@ class GitHub(object):
         user = self.get(urljoin(self.base_url, "/user")).json()
         issue_comments_url = urljoin(self.base_url, "issues/%s/comments" % issue_number)
         comments = self.get(issue_comments_url).json()
-        title_line = "# %s #" % self.browser.title()
+        title_line = format_comment_title(self.product)
         data = {"body": body}
         for comment in comments:
             if (comment["user"]["login"] == user["login"] and
@@ -155,10 +157,6 @@ class GitHub(object):
                 break
         else:
             self.post(issue_comments_url, data)
-
-    def releases(self):
-        url = urljoin(self.base_url, "releases/latest")
-        return self.get(url)
 
 
 class GitHubCommentHandler(logging.Handler):
@@ -182,6 +180,7 @@ class GitHubCommentHandler(logging.Handler):
 
 class Browser(object):
     product = None
+    binary = None
 
     def __init__(self, github_token):
         self.github_token = github_token
@@ -189,6 +188,8 @@ class Browser(object):
 
 class Firefox(Browser):
     product = "firefox"
+    binary = "%s/firefox/firefox"
+    platform_ini = "%s/firefox/platform.ini"
 
     def install(self):
         call("pip", "install", "-r", "w3c/wptrunner/requirements_firefox.txt")
@@ -223,10 +224,20 @@ class Firefox(Browser):
         url = "https://github.com/mozilla/geckodriver/releases/download/%s/geckodriver-%s-linux64.tar.gz" % (version, version)
         untar(get(url).raw)
 
+    def version(self, root):
+        """Retrieve the release version of the installed browser."""
+        platform_info = RawConfigParser()
+
+        with open(self.platform_ini % root, "r") as fp:
+            platform_info.readfp(BytesIO(fp.read()))
+            return "BuildID %s; SourceStamp %s" % (
+                platform_info.get("Build", "BuildID"),
+                platform_info.get("Build", "SourceStamp"))
+
     def wptrunner_args(self, root):
         return {
             "product": "firefox",
-            "binary": "%s/firefox/firefox" % root,
+            "binary": self.binary % root,
             "certutil_binary": "certutil",
             "webdriver_binary": "%s/geckodriver" % root,
             "prefs_root": "%s/profiles" % root,
@@ -235,12 +246,12 @@ class Firefox(Browser):
 
 class Chrome(Browser):
     product = "chrome"
+    binary = "/usr/bin/google-chrome"
 
     def install(self):
-        latest = get("https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2FLAST_CHANGE?alt=media").text.strip()
-        url = "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%%2F%s%%2Fchrome-linux.zip?alt=media" % latest
-        unzip(get(url).raw)
-        logger.debug(call("ls", "-lhrt", "chrome-linux"))
+        # Installing the Google Chrome browser requires administrative
+        # privileges, so that installation is handled by the invoking script.
+
         call("pip", "install", "-r", os.path.join("w3c", "wptrunner", "requirements_chrome.txt"))
 
     def install_webdriver(self):
@@ -250,10 +261,21 @@ class Chrome(Browser):
         st = os.stat('chromedriver')
         os.chmod('chromedriver', st.st_mode | stat.S_IEXEC)
 
+    def version(self, root):
+        """Retrieve the release version of the installed browser."""
+        output = call(self.binary, "--version")
+        return re.search(r"[0-9a-z\.]+$", output.strip()).group(0)
+
     def wptrunner_args(self, root):
         return {
             "product": "chrome",
-            "binary": "%s/chrome-linux/chrome" % root,
+            "binary": self.binary,
+            # Chrome's "sandbox" security feature must be disabled in order to
+            # run the browser in OpenVZ environments such as the one provided
+            # by TravisCI.
+            #
+            # Reference: https://github.com/travis-ci/travis-ci/issues/938
+            "binary_arg": "--no-sandbox",
             "webdriver_binary": "%s/chromedriver" % root,
             "test_types": ["testharness", "reftest"]
         }
@@ -319,7 +341,7 @@ def setup_github_logging(args):
     gh_handler = None
     if args.comment_pr:
         # TODO do not explicitly reference W3C repo
-        github = GitHub("w3c", "web-platform-tests", args.gh_token, args.browser)
+        github = GitHub("w3c", "web-platform-tests", args.gh_token, args.product)
         try:
             pr_number = int(args.comment_pr)
         except ValueError:
@@ -387,7 +409,7 @@ def get_affected_testfiles(files_changed, repo_root):
     all_tests = set()
     nontests_changed = set(files_changed)
     manifest_file = os.path.join(repo_root, "MANIFEST.json")
-    for test, _ in manifest.load(repo_root, manifest_file):
+    for _, test, _ in manifest.load(repo_root, manifest_file):
         test_full_path = os.path.join(repo_root, test)
         all_tests.add(test_full_path)
         if test_full_path in nontests_changed:
@@ -488,6 +510,21 @@ def process_results(log, iterations):
     return results, inconsistent
 
 
+def format_comment_title(product):
+    """Produce a Markdown-formatted string based on a given "product"--a string
+    containing a browser identifier optionally followed by a colon and a
+    release channel. (For example: "firefox" or "chrome:dev".) The generated
+    title string is used both to create new comments and to locate (and
+    subsequently update) previously-submitted comments."""
+    parts = product.split(":")
+    title = parts[0].title()
+
+    if len(parts) > 1:
+       title += " (%s channel)" % parts[1]
+
+    return "# %s #" % title
+
+
 def markdown_adjust(s):
     s = s.replace('\t', u'\\t')
     s = s.replace('\n', u'\\n')
@@ -574,9 +611,9 @@ def get_parser():
                         action="store",
                         default=os.environ.get("TRAVIS_PULL_REQUEST"),
                         help="PR to comment on with stability results")
-    parser.add_argument("browser",
+    parser.add_argument("product",
                         action="store",
-                        help="Browser to run against")
+                        help="Product to run against (`browser-name` or 'browser-name:channel')")
     return parser
 
 
@@ -608,19 +645,21 @@ def main():
         logger.warning("Can't log to GitHub")
         gh_handler = None
 
+    browser_name = args.product.split(":")[0]
+
     with TravisFold("browser_setup"):
-        logger.info("# %s #" % args.browser.title())
+        logger.info(format_comment_title(args.product))
 
         browser_cls = {"firefox": Firefox,
-                       "chrome": Chrome}.get(args.browser)
+                       "chrome": Chrome}.get(browser_name)
         if browser_cls is None:
-            logger.critical("Unrecognised browser %s" % args.browser)
+            logger.critical("Unrecognised browser %s" % browser_name)
             return 1
 
         fetch_wpt_master(args.repo_path, args.remote_repo)
 
         head_sha1 = get_sha1(args.repo_path)
-        logger.info("Testing revision %s" % head_sha1)
+        logger.info("Testing web-platform-tests at revision %s" % head_sha1)
 
         # For now just pass the whole list of changed files to wptrunner and
         # assume that it will run everything that's actually a test
@@ -634,6 +673,16 @@ def main():
         install_wptrunner()
         do_delayed_imports()
 
+        browser = browser_cls(args.gh_token)
+        browser.install()
+        browser.install_webdriver()
+
+        try:
+            version = browser.version(args.root)
+        except Exception, e:
+            version = "unknown (error: %s)" % e
+        logger.info("Using browser at version %s", version)
+
         logger.debug("Files changed:\n%s" % "".join(" * %s\n" % item for item in files_changed))
 
         affected_testfiles = get_affected_testfiles(files_changed, args.repo_path)
@@ -641,11 +690,6 @@ def main():
         logger.debug("Affected tests:\n%s" % "".join(" * %s\n" % item for item in affected_testfiles))
 
         files_changed.extend(affected_testfiles)
-
-        browser = browser_cls(args.gh_token)
-
-        browser.install()
-        browser.install_webdriver()
 
         kwargs = wptrunner_args(args.root,
                                 args.repo_path,
