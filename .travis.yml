@@ -36,7 +36,6 @@ matrix:
         - secure: "YTSXPwI0DyCA1GhYrLT9KMEV6b7QQKuEeaQgeFDP38OTzJ1+cIj3CC4SRNqbnJ/6SJwPGcdqSxLuV8m4e5HFFnyCcQnJe6h8EMsTehZ7W3j/fP9UYrJqYqvGpe3Vj3xblO5pwBYmq7sg3jAmmuCgAgOW6VGf7cRMucrsmFeo7VM="
         - SCRIPT=ci_stability.sh
         - PRODUCT=firefox:nightly
-        - CHECK_STABILITY_ARGS="--remote-repo https://github.com/jeremypoulter/web-platform-tests.git"
     - os: linux
       sudo: required
       python: "2.7"
@@ -49,7 +48,6 @@ matrix:
         - secure: "YTSXPwI0DyCA1GhYrLT9KMEV6b7QQKuEeaQgeFDP38OTzJ1+cIj3CC4SRNqbnJ/6SJwPGcdqSxLuV8m4e5HFFnyCcQnJe6h8EMsTehZ7W3j/fP9UYrJqYqvGpe3Vj3xblO5pwBYmq7sg3jAmmuCgAgOW6VGf7cRMucrsmFeo7VM="
         - SCRIPT=ci_stability.sh
         - PRODUCT=chrome:unstable
-        - CHECK_STABILITY_ARGS="--remote-repo https://github.com/jeremypoulter/web-platform-tests.git"
 script:
   - bash $SCRIPT
 cache:
