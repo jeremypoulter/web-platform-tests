@@ -461,6 +461,25 @@
             }
         },
         {
+            "href": "sc://x/",
+            "new_value": "ß",
+            "expected": {
+                "href": "sc://%C3%9F/",
+                "host": "%C3%9F",
+                "hostname": "%C3%9F"
+            }
+        },
+        {
+            "comment": "IDNA Nontransitional_Processing",
+            "href": "https://x/",
+            "new_value": "ß",
+            "expected": {
+                "href": "https://xn--zca/",
+                "host": "xn--zca",
+                "hostname": "xn--zca"
+            }
+        },
+        {
             "comment": "Cannot-be-a-base means no host",
             "href": "mailto:me@example.net",
             "new_value": "example.com",
@@ -813,6 +832,16 @@
             }
         },
         {
+            "href": "file://hi/x",
+            "new_value": "",
+            "expected": {
+                "href": "file:///x",
+                "host": "",
+                "hostname": "",
+                "port": ""
+            }
+        },
+        {
             "href": "sc://test@test/",
             "new_value": "",
             "expected": {
@@ -1131,6 +1160,16 @@
             "new_value": "loc%41lhost",
             "expected": {
                 "href": "file:///",
+                "host": "",
+                "hostname": "",
+                "port": ""
+            }
+        },
+        {
+            "href": "file://hi/x",
+            "new_value": "",
+            "expected": {
+                "href": "file:///x",
                 "host": "",
                 "hostname": "",
                 "port": ""

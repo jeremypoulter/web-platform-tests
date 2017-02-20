@@ -44,7 +44,7 @@ install_chrome() {
 }
 
 test_stability() {
-    python check_stability.py $CHECK_STABILITY_ARGS $PRODUCT
+    python check_stability.py $CHECK_STABILITY_ARGS $PRODUCT --output-bytes $((1024 * 1024 * 3))
 }
 
 main() {
